@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="generator" content="Hugo 0.55.6" />
+
+<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+
+
+
+<link rel="shortcut icon" href="/favicons/favicon.ico" >
+<link rel="apple-touch-icon" href="/favicons/apple-touch-icon-180x180.png" sizes="180x180">
+<link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicons/android-36x36.png" sizes="36x36">
+<link rel="icon" type="image/png" href="/favicons/android-48x48.png" sizes="48x48">
+<link rel="icon" type="image/png" href="/favicons/android-72x72.png" sizes="72x72">
+<link rel="icon" type="image/png" href="/favicons/android-96x196.png" sizes="96x196">
+<link rel="icon" type="image/png" href="/favicons/android-144x144.png" sizes="144x144">
+<link rel="icon" type="image/png" href="/favicons/android-192x192.png"sizes="192x192">
+
+<title>Gin 1.3.0 is released | Gin Web Framework</title><meta property="og:title" content="Gin 1.3.0 is released" />
+<meta property="og:description" content="CHANGELOG  [NEW] Add func (*Context) QueryMap, func (*Context) GetQueryMap, func (*Context) PostFormMap and func (*Context) GetPostFormMap to support type map[string]string as query string or form parameters, see #1383 [NEW] Add func (*Context) AsciiJSON, see #1358 [NEW] Add Pusher() in type ResponseWriter for supporting http2 push, see #1273 [NEW] Add func (*Context) DataFromReader for serving dynamic data, see #1304 [NEW] Add func (*Context) ShouldBindBodyWith allowing to call binding multiple times, see #1341 [NEW] Support pointers in form binding, see #1336 [NEW] Add func (*Context) JSONP, see #1333 [NEW] Support default value in form binding, see #1138 [NEW] Expose validator engine in type StructValidator, see #1277 [NEW] Add func (*Context) ShouldBind, func (*Context) ShouldBindQuery and func (*Context) ShouldBindJSON, see #1047 [NEW] Add support for time." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://gin-gonic.com/blog/2018/08/14/gin-1.3.0-is-released/" />
+<meta property="article:published_time" content="2018-08-14T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-03-04T20:34:20&#43;08:00"/><meta property="og:site_name" content="Gin Web Framework" />
+
+<meta itemprop="name" content="Gin 1.3.0 is released">
+<meta itemprop="description" content="CHANGELOG  [NEW] Add func (*Context) QueryMap, func (*Context) GetQueryMap, func (*Context) PostFormMap and func (*Context) GetPostFormMap to support type map[string]string as query string or form parameters, see #1383 [NEW] Add func (*Context) AsciiJSON, see #1358 [NEW] Add Pusher() in type ResponseWriter for supporting http2 push, see #1273 [NEW] Add func (*Context) DataFromReader for serving dynamic data, see #1304 [NEW] Add func (*Context) ShouldBindBodyWith allowing to call binding multiple times, see #1341 [NEW] Support pointers in form binding, see #1336 [NEW] Add func (*Context) JSONP, see #1333 [NEW] Support default value in form binding, see #1138 [NEW] Expose validator engine in type StructValidator, see #1277 [NEW] Add func (*Context) ShouldBind, func (*Context) ShouldBindQuery and func (*Context) ShouldBindJSON, see #1047 [NEW] Add support for time.">
+
+
+<meta itemprop="datePublished" content="2018-08-14T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-03-04T20:34:20&#43;08:00" />
+<meta itemprop="wordCount" content="205">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Gin 1.3.0 is released"/>
+<meta name="twitter:description" content="CHANGELOG  [NEW] Add func (*Context) QueryMap, func (*Context) GetQueryMap, func (*Context) PostFormMap and func (*Context) GetPostFormMap to support type map[string]string as query string or form parameters, see #1383 [NEW] Add func (*Context) AsciiJSON, see #1358 [NEW] Add Pusher() in type ResponseWriter for supporting http2 push, see #1273 [NEW] Add func (*Context) DataFromReader for serving dynamic data, see #1304 [NEW] Add func (*Context) ShouldBindBodyWith allowing to call binding multiple times, see #1341 [NEW] Support pointers in form binding, see #1336 [NEW] Add func (*Context) JSONP, see #1333 [NEW] Support default value in form binding, see #1138 [NEW] Expose validator engine in type StructValidator, see #1277 [NEW] Add func (*Context) ShouldBind, func (*Context) ShouldBindQuery and func (*Context) ShouldBindJSON, see #1047 [NEW] Add support for time."/>
+
+
+
+
+
+<link rel="preload" href="/scss/main.min.397589ac262831fa6dd4eb5f7daea1140a381d982abddabfeefab2fbf5645fe0.css" as="style">
+<link href="/scss/main.min.397589ac262831fa6dd4eb5f7daea1140a381d982abddabfeefab2fbf5645fe0.css" rel="stylesheet" integrity="">
+
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+
+    <title>Gin 1.3.0 is released | Gin Web Framework</title>
+  </head>
+  <body class="td-page td-blog">
+    <header>
+      
+<nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
+	<a class="navbar-brand" href="/">
+		<span class="navbar-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240"/> </span><span class="font-weight-bold">Gin Web Framework</span>
+	</a>
+	<div class="td-navbar-nav-scroll ml-md-auto" id="main_navbar">
+		<ul class="navbar-nav mt-2 mt-lg-0">
+			
+			
+			<li class="nav-item mr-4 mb-2 mb-lg-0">
+				
+				
+				
+				
+				<a class="nav-link" href="/docs/"><span>Documentation</span></a>
+			</li>
+			
+			<li class="nav-item mr-4 mb-2 mb-lg-0">
+				
+				
+				
+				
+				<a class="nav-link active" href="/blog/"><span class="active">Blog</span></a>
+			</li>
+			
+
+			
+			<li class="nav-item dropdown d-none d-lg-block">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					GitHub
+				</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+					<a class="dropdown-item" href="https://github.com/gin-gonic">Gin</a>
+					<a class="dropdown-item" href="https://github.com/gin-contrib">Middleware</a>
+				</div>
+			</li>
+
+			
+			<li class="nav-item dropdown d-none d-lg-block">
+				
+
+<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	English
+</a>
+<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+	
+	<a class="dropdown-item" href="/ja/">日本語</a>
+	
+	<a class="dropdown-item" href="/zh-cn/">简体中文</a>
+	
+	<a class="dropdown-item" href="/zh-tw/">繁體中文</a>
+	
+</div>
+			</li>
+			
+		</ul>
+	</div>
+	<div class="navbar-nav d-none d-lg-block">
+ <input type="search" class="form-control td-search-input" placeholder="&#xf002 Search this site…" aria-label="Search this site…" autocomplete="off">
+</div>
+</nav>
+
+    </header>
+    <div class="container-fluid td-outer">
+      <div class="td-main">
+        <div class="row flex-xl-nowrap">
+          <div class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+            
+
+
+
+
+<div id="td-sidebar-menu" class="td-sidebar__inner">
+  
+  <nav class="collapse td-sidebar-nav pt-2 pl-4" id="td-section-nav">
+    
+    <div class="nav-item dropdown d-block d-lg-none">
+      
+
+<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	English
+</a>
+<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+	
+	<a class="dropdown-item" href="/ja/">日本語</a>
+	
+	<a class="dropdown-item" href="/zh-cn/">简体中文</a>
+	
+	<a class="dropdown-item" href="/zh-tw/">繁體中文</a>
+	
+</div>
+    </div>
+    
+    
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/blog/" class="align-left pl-0 pr-2 td-sidebar-link td-sidebar-link__section">Blog</a>
+  </li>
+  <ul>
+    <li class="collapse show" id="blog">
+      
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/blog/news/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">News</a>
+  </li>
+  <ul>
+    <li class="collapse " id="blog-news">
+      
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-blog-2019-02-26-how-to-build-one-effective-middleware" href="/blog/2019/02/26/how-to-build-one-effective-middleware/">How to build one effective middleware?</a>
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/blog/releases/" class="align-left pl-0 pr-2 active td-sidebar-link td-sidebar-link__section">Releases</a>
+  </li>
+  <ul>
+    <li class="collapse show" id="blog-releases">
+      
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page  active" id="m-blog-2018-08-14-gin-1-3-0-is-released" href="/blog/2018/08/14/gin-1.3.0-is-released/">Gin 1.3.0 is released</a>
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+    </li>
+  </ul>
+</ul>
+
+  </nav>
+</div>
+
+
+
+
+          </div>
+          <div class="d-none d-xl-block col-xl-2 td-toc d-print-none">
+            
+
+
+<div class="td-page-meta ml-2 pb-1 pt-2 mb-0">
+
+
+<a href="https://github.com/gin-gonic/website/edit/master/content/en/blog/releases/release13.md" target="_blank"><i class="fa fa-edit fa-fw"></i> Edit this page</a>
+<a href="https://github.com/gin-gonic/website/issues/new?title=Gin%201.3.0%20is%20released" target="_blank"><i class="fab fa-github fa-fw"></i> Create issue</a>
+</div>
+
+
+
+
+
+
+
+
+          </div>
+          <main class="col-12 col-md-9 col-xl-8 pl-md-5 pr-md-4" role="main">
+            <a class="btn btn-lg -bg-orange td-rss-button d-none d-lg-block" href="https://gin-gonic.com/blog/releases/index.xml" target="_blank">
+              RSS <i class="fa fa-rss ml-2 "></i>
+            </a>
+            
+<div class="td-content">
+	<h1>Gin 1.3.0 is released</h1>
+	
+	<div class="td-byline mb-4">
+		
+		<time datetime="2018-08-14" class="text-muted">Tuesday, August 14, 2018</time>
+	</div>
+	
+
+<h3 id="changelog">CHANGELOG</h3>
+
+<ul>
+<li>[NEW] Add <a href="https://godoc.org/github.com/gin-gonic/gin#Context.QueryMap" target="_blank"><code>func (*Context) QueryMap</code></a>, <a href="https://godoc.org/github.com/gin-gonic/gin#Context.GetQueryMap" target="_blank"><code>func (*Context) GetQueryMap</code></a>, <a href="https://godoc.org/github.com/gin-gonic/gin#Context.PostFormMap" target="_blank"><code>func (*Context) PostFormMap</code></a> and <a href="https://godoc.org/github.com/gin-gonic/gin#Context.GetPostFormMap" target="_blank"><code>func (*Context) GetPostFormMap</code></a> to support <code>type map[string]string</code> as query string or form parameters, see <a href="https://github.com/gin-gonic/gin/pull/1383" target="_blank">#1383</a></li>
+<li>[NEW] Add <a href="https://godoc.org/github.com/gin-gonic/gin#Context.AsciiJSON" target="_blank"><code>func (*Context) AsciiJSON</code></a>, see <a href="https://github.com/gin-gonic/gin/pull/1358" target="_blank">#1358</a></li>
+<li>[NEW] Add <code>Pusher()</code> in <a href="https://godoc.org/github.com/gin-gonic/gin#ResponseWriter" target="_blank"><code>type ResponseWriter</code></a> for supporting http2 push, see <a href="https://github.com/gin-gonic/gin/pull/1273" target="_blank">#1273</a></li>
+<li>[NEW] Add <a href="https://godoc.org/github.com/gin-gonic/gin#Context.DataFromReader" target="_blank"><code>func (*Context) DataFromReader</code></a> for serving dynamic data, see <a href="https://github.com/gin-gonic/gin/pull/1304" target="_blank">#1304</a></li>
+<li>[NEW] Add <a href="https://godoc.org/github.com/gin-gonic/gin#Context.ShouldBindBodyWith" target="_blank"><code>func (*Context) ShouldBindBodyWith</code></a> allowing to call binding multiple times, see <a href="https://github.com/gin-gonic/gin/pull/1341" target="_blank">#1341</a></li>
+<li>[NEW] Support pointers in form binding, see <a href="https://github.com/gin-gonic/gin/pull/1336" target="_blank">#1336</a></li>
+<li>[NEW] Add <a href="https://godoc.org/github.com/gin-gonic/gin#Context.JSONP" target="_blank"><code>func (*Context) JSONP</code></a>, see <a href="https://github.com/gin-gonic/gin/pull/1333" target="_blank">#1333</a></li>
+<li>[NEW] Support default value in form binding, see <a href="https://github.com/gin-gonic/gin/pull/1138" target="_blank">#1138</a></li>
+<li>[NEW] Expose validator engine in <a href="https://godoc.org/github.com/gin-gonic/gin/binding#StructValidator" target="_blank"><code>type StructValidator</code></a>, see <a href="https://github.com/gin-gonic/gin/pull/1277" target="_blank">#1277</a></li>
+<li>[NEW] Add <a href="https://godoc.org/github.com/gin-gonic/gin#Context.ShouldBind" target="_blank"><code>func (*Context) ShouldBind</code></a>, <a href="https://godoc.org/github.com/gin-gonic/gin#Context.ShouldBindQuery" target="_blank"><code>func (*Context) ShouldBindQuery</code></a> and <a href="https://godoc.org/github.com/gin-gonic/gin#Context.ShouldBindJSON" target="_blank"><code>func (*Context) ShouldBindJSON</code></a>, see <a href="https://github.com/gin-gonic/gin/pull/1047" target="_blank">#1047</a></li>
+<li>[NEW] Add support for <code>time.Time</code> location in form binding, see <a href="https://github.com/gin-gonic/gin/pull/1117" target="_blank">#1117</a></li>
+<li>[NEW] Add <a href="https://godoc.org/github.com/gin-gonic/gin#Context.BindQuery" target="_blank"><code>func (*Context) BindQuery</code></a>, see <a href="https://github.com/gin-gonic/gin/pull/1029" target="_blank">#1029</a></li>
+<li>[NEW] Make <a href="https://github.com/json-iterator/go" target="_blank">jsonite</a> optional with build tags, see <a href="https://github.com/gin-gonic/gin/pull/1026" target="_blank">#1026</a></li>
+<li>[NEW] Show query string in logger, see <a href="https://github.com/gin-gonic/gin/pull/999" target="_blank">#999</a></li>
+<li>[NEW] Add <a href="https://godoc.org/github.com/gin-gonic/gin#Context.SecureJSON" target="_blank"><code>func (*Context) SecureJSON</code></a>, see <a href="https://github.com/gin-gonic/gin/pull/987" target="_blank">#987</a> and <a href="https://github.com/gin-gonic/gin/pull/993" target="_blank">#993</a></li>
+<li>[DEPRECATE] <code>func (*Context) GetCookie</code> for <a href="https://godoc.org/github.com/gin-gonic/gin#Context.Cookie" target="_blank"><code>func (*Context) Cookie</code></a></li>
+<li>[FIX] Don&rsquo;t display color tags if <a href="https://godoc.org/github.com/gin-gonic/gin#DisableConsoleColor" target="_blank"><code>func DisableConsoleColor</code></a> called, see <a href="https://github.com/gin-gonic/gin/pull/1072" target="_blank">#1072</a></li>
+<li>[FIX] Gin Mode <code>&quot;&quot;</code> when calling <a href="https://godoc.org/github.com/gin-gonic/gin#Mode" target="_blank"><code>func Mode</code></a> now returns <code>const DebugMode</code>, see <a href="https://github.com/gin-gonic/gin/pull/1250" target="_blank">#1250</a></li>
+<li>[FIX] <code>Flush()</code> now doesn&rsquo;t overwrite <code>responseWriter</code> status code, see <a href="https://github.com/gin-gonic/gin/pull/1460" target="_blank">#1460</a></li>
+</ul>
+
+	
+		<br />
+		<div class="page-blank">
+
+<div id="disqus_thread"></div>
+<script>
+
+
+
+
+
+(function() { 
+var d = document, s = d.createElement('script');
+s.src = 'https://' + "gin-gonic" + '.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+		<br />
+	
+
+	<ul class="list-unstyled d-flex justify-content-between align-items-center mb-0 pt-5">
+  <li>
+    <a href="" class="btn btn-primary  disabled"><span class="mr-1">←</span> Previous</a>
+  </li>
+ 
+    <a href="" class="btn btn-primary  disabled">Next <span class="ml-1">→</span></a>
+  </li>
+</ul>
+
+
+
+
+</div>
+
+
+          </main>
+        </div>
+      </div>
+      
+<footer class="bg-dark py-5 row d-print-none" style="min-height:60px;padding-top:1rem !important">
+  <div class="container-fluid mx-sm-5">
+    <div class="row">
+      <div class="col-6 col-sm-4 text-xs-center order-sm-2">
+        
+        
+        
+<ul class="list-inline mb-0">
+  
+  <li class="list-inline-item mx-2 h3" data-toggle="tooltip" data-placement="top" title="Gitter">
+    <a class="text-white" target="_blank" href="https://gitter.im/gin-gonic/gin">
+      <i class="fab fa-gitter"></i>
+    </a>
+  </li>
+  
+  <li class="list-inline-item mx-2 h3" data-toggle="tooltip" data-placement="top" title="GitHub">
+    <a class="text-white" target="_blank" href="https://github.com/gin-gonic/gin">
+      <i class="fab fa-github"></i>
+    </a>
+  </li>
+  
+</ul>
+
+        
+        
+      </div>
+      <div class="col-6 col-sm-4 text-right text-xs-center order-sm-3">
+        
+        
+        
+      </div>
+      <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
+        <small class="text-white">&copy; 2019 Gin Team All Rights Reserved</small>
+        
+	
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+
+
+
+
+
+<script src="/js/main.min.3bf219f876522fd3da95f26cf5b58461f5289b2926b46ee10e55182e557a8855.js" integrity="sha256-O/IZ&#43;HZSL9PalfJs9bWEYfUomykmtG7hDlUYLlV6iFU="></script>
+
+
+
+
+    
+<script>
+(function() { 
+var d = document, s = d.createElement('script');
+s.src = 'https://www.googletagmanager.com/gtag/js?id=' + "UA-42425385-2";
+s.setAttribute('async', '');
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', "UA-42425385-2");
+</script>
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,60 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Gin Web Framework – Releases</title>
+    <link>https://gin-gonic.com/blog/releases/</link>
+    <description>Recent Hugo news from gohugo.io</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <image>
+      <url>https://gin-gonic.com/img/hugo.png</url>
+      <title>GoHugo.io</title>
+      <link>https://gin-gonic.com/blog/releases/</link>
+    </image>
+    
+	  <atom:link href="https://gin-gonic.com/blog/releases/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Blog: Gin 1.3.0 is released</title>
+      <link>https://gin-gonic.com/blog/2018/08/14/gin-1.3.0-is-released/</link>
+      <pubDate>Tue, 14 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://gin-gonic.com/blog/2018/08/14/gin-1.3.0-is-released/</guid>
+      <description>
+        
+        
+        
+
+&lt;h3 id=&#34;changelog&#34;&gt;CHANGELOG&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;[NEW] Add &lt;a href=&#34;https://godoc.org/github.com/gin-gonic/gin#Context.QueryMap&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;func (*Context) QueryMap&lt;/code&gt;&lt;/a&gt;, &lt;a href=&#34;https://godoc.org/github.com/gin-gonic/gin#Context.GetQueryMap&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;func (*Context) GetQueryMap&lt;/code&gt;&lt;/a&gt;, &lt;a href=&#34;https://godoc.org/github.com/gin-gonic/gin#Context.PostFormMap&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;func (*Context) PostFormMap&lt;/code&gt;&lt;/a&gt; and &lt;a href=&#34;https://godoc.org/github.com/gin-gonic/gin#Context.GetPostFormMap&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;func (*Context) GetPostFormMap&lt;/code&gt;&lt;/a&gt; to support &lt;code&gt;type map[string]string&lt;/code&gt; as query string or form parameters, see &lt;a href=&#34;https://github.com/gin-gonic/gin/pull/1383&#34; target=&#34;_blank&#34;&gt;#1383&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[NEW] Add &lt;a href=&#34;https://godoc.org/github.com/gin-gonic/gin#Context.AsciiJSON&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;func (*Context) AsciiJSON&lt;/code&gt;&lt;/a&gt;, see &lt;a href=&#34;https://github.com/gin-gonic/gin/pull/1358&#34; target=&#34;_blank&#34;&gt;#1358&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[NEW] Add &lt;code&gt;Pusher()&lt;/code&gt; in &lt;a href=&#34;https://godoc.org/github.com/gin-gonic/gin#ResponseWriter&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;type ResponseWriter&lt;/code&gt;&lt;/a&gt; for supporting http2 push, see &lt;a href=&#34;https://github.com/gin-gonic/gin/pull/1273&#34; target=&#34;_blank&#34;&gt;#1273&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[NEW] Add &lt;a href=&#34;https://godoc.org/github.com/gin-gonic/gin#Context.DataFromReader&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;func (*Context) DataFromReader&lt;/code&gt;&lt;/a&gt; for serving dynamic data, see &lt;a href=&#34;https://github.com/gin-gonic/gin/pull/1304&#34; target=&#34;_blank&#34;&gt;#1304&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[NEW] Add &lt;a href=&#34;https://godoc.org/github.com/gin-gonic/gin#Context.ShouldBindBodyWith&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;func (*Context) ShouldBindBodyWith&lt;/code&gt;&lt;/a&gt; allowing to call binding multiple times, see &lt;a href=&#34;https://github.com/gin-gonic/gin/pull/1341&#34; target=&#34;_blank&#34;&gt;#1341&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[NEW] Support pointers in form binding, see &lt;a href=&#34;https://github.com/gin-gonic/gin/pull/1336&#34; target=&#34;_blank&#34;&gt;#1336&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[NEW] Add &lt;a href=&#34;https://godoc.org/github.com/gin-gonic/gin#Context.JSONP&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;func (*Context) JSONP&lt;/code&gt;&lt;/a&gt;, see &lt;a href=&#34;https://github.com/gin-gonic/gin/pull/1333&#34; target=&#34;_blank&#34;&gt;#1333&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[NEW] Support default value in form binding, see &lt;a href=&#34;https://github.com/gin-gonic/gin/pull/1138&#34; target=&#34;_blank&#34;&gt;#1138&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[NEW] Expose validator engine in &lt;a href=&#34;https://godoc.org/github.com/gin-gonic/gin/binding#StructValidator&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;type StructValidator&lt;/code&gt;&lt;/a&gt;, see &lt;a href=&#34;https://github.com/gin-gonic/gin/pull/1277&#34; target=&#34;_blank&#34;&gt;#1277&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[NEW] Add &lt;a href=&#34;https://godoc.org/github.com/gin-gonic/gin#Context.ShouldBind&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;func (*Context) ShouldBind&lt;/code&gt;&lt;/a&gt;, &lt;a href=&#34;https://godoc.org/github.com/gin-gonic/gin#Context.ShouldBindQuery&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;func (*Context) ShouldBindQuery&lt;/code&gt;&lt;/a&gt; and &lt;a href=&#34;https://godoc.org/github.com/gin-gonic/gin#Context.ShouldBindJSON&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;func (*Context) ShouldBindJSON&lt;/code&gt;&lt;/a&gt;, see &lt;a href=&#34;https://github.com/gin-gonic/gin/pull/1047&#34; target=&#34;_blank&#34;&gt;#1047&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[NEW] Add support for &lt;code&gt;time.Time&lt;/code&gt; location in form binding, see &lt;a href=&#34;https://github.com/gin-gonic/gin/pull/1117&#34; target=&#34;_blank&#34;&gt;#1117&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[NEW] Add &lt;a href=&#34;https://godoc.org/github.com/gin-gonic/gin#Context.BindQuery&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;func (*Context) BindQuery&lt;/code&gt;&lt;/a&gt;, see &lt;a href=&#34;https://github.com/gin-gonic/gin/pull/1029&#34; target=&#34;_blank&#34;&gt;#1029&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[NEW] Make &lt;a href=&#34;https://github.com/json-iterator/go&#34; target=&#34;_blank&#34;&gt;jsonite&lt;/a&gt; optional with build tags, see &lt;a href=&#34;https://github.com/gin-gonic/gin/pull/1026&#34; target=&#34;_blank&#34;&gt;#1026&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[NEW] Show query string in logger, see &lt;a href=&#34;https://github.com/gin-gonic/gin/pull/999&#34; target=&#34;_blank&#34;&gt;#999&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[NEW] Add &lt;a href=&#34;https://godoc.org/github.com/gin-gonic/gin#Context.SecureJSON&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;func (*Context) SecureJSON&lt;/code&gt;&lt;/a&gt;, see &lt;a href=&#34;https://github.com/gin-gonic/gin/pull/987&#34; target=&#34;_blank&#34;&gt;#987&lt;/a&gt; and &lt;a href=&#34;https://github.com/gin-gonic/gin/pull/993&#34; target=&#34;_blank&#34;&gt;#993&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[DEPRECATE] &lt;code&gt;func (*Context) GetCookie&lt;/code&gt; for &lt;a href=&#34;https://godoc.org/github.com/gin-gonic/gin#Context.Cookie&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;func (*Context) Cookie&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[FIX] Don&amp;rsquo;t display color tags if &lt;a href=&#34;https://godoc.org/github.com/gin-gonic/gin#DisableConsoleColor&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;func DisableConsoleColor&lt;/code&gt;&lt;/a&gt; called, see &lt;a href=&#34;https://github.com/gin-gonic/gin/pull/1072&#34; target=&#34;_blank&#34;&gt;#1072&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[FIX] Gin Mode &lt;code&gt;&amp;quot;&amp;quot;&lt;/code&gt; when calling &lt;a href=&#34;https://godoc.org/github.com/gin-gonic/gin#Mode&#34; target=&#34;_blank&#34;&gt;&lt;code&gt;func Mode&lt;/code&gt;&lt;/a&gt; now returns &lt;code&gt;const DebugMode&lt;/code&gt;, see &lt;a href=&#34;https://github.com/gin-gonic/gin/pull/1250&#34; target=&#34;_blank&#34;&gt;#1250&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[FIX] &lt;code&gt;Flush()&lt;/code&gt; now doesn&amp;rsquo;t overwrite &lt;code&gt;responseWriter&lt;/code&gt; status code, see &lt;a href=&#34;https://github.com/gin-gonic/gin/pull/1460&#34; target=&#34;_blank&#34;&gt;#1460&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

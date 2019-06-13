@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="generator" content="Hugo 0.55.6" />
+
+<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+
+
+
+<link rel="shortcut icon" href="/favicons/favicon.ico" >
+<link rel="apple-touch-icon" href="/favicons/apple-touch-icon-180x180.png" sizes="180x180">
+<link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicons/android-36x36.png" sizes="36x36">
+<link rel="icon" type="image/png" href="/favicons/android-48x48.png" sizes="48x48">
+<link rel="icon" type="image/png" href="/favicons/android-72x72.png" sizes="72x72">
+<link rel="icon" type="image/png" href="/favicons/android-96x196.png" sizes="96x196">
+<link rel="icon" type="image/png" href="/favicons/android-144x144.png" sizes="144x144">
+<link rel="icon" type="image/png" href="/favicons/android-192x192.png"sizes="192x192">
+
+<title>モデルへのバインディングとバリデーションする | Gin Web Framework</title><meta property="og:title" content="モデルへのバインディングとバリデーションする" />
+<meta property="og:description" content="リクエストボディをある型にバインドするには、モデルへのバインディングを利用してください。Gin は今のところ JSON, XML, YAML と標準的なフォームの値(foo=bar&amp;boo=baz)をサポートしています。
+Gin は go-playground/validator.v8 をバリデーションに使用しています。 タグの使い方のすべてのドキュメントを読むには ここ を参照してください。
+バインドしたいすべてのフィールドに対応するタグを設定する必要があることに注意してください。たとえば、JSONからバインドする場合は、json:&quot;fieldname&quot; を設定します。
+また、Gin は2種類のバインドのためのメソッドを用意しています。 - 種類 - Must bind - メソッド - Bind, BindJSON, BindXML, BindQuery, BindYAML - 挙動 - これらのメソッドは、内部では MustBindWith メソッドを使っています。もしバインド時にエラーがあった場合、ユーザーからのリクエストは c.AbortWithError(400, err).SetType(ErrorTypeBind) で中止されます。この処理は、ステータスコード 400 を設定し、Content-Type ヘッダーに text/plain; charset=utf-8 をセットします。もしこのあとにステータスコードを設定しようとした場合、[GIN-debug] [WARNING] Headers were already written. Wanted to override status code 400 with 422 という注意メッセージが表示されるので注意してください。もしこの挙動をよりコントロールする必要がある場合、ShouldBind という同様のメソッドを利用することを検討してください。 - 種類 - Should bind - メソッド - ShouldBind, ShouldBindJSON, ShouldBindXML, ShouldBindQuery, ShouldBindYAML - 挙動 - これらのメソッドは、内部では ShouldBindWith メソッドを使っています。もしバインド時にエラーがあった場合、エラーが返ってくるので、開発者の責任で、適切にエラーやリクエストをハンドリングします。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://gin-gonic.com/ja/docs/examples/binding-and-validation/" />
+<meta property="article:modified_time" content="2019-03-04T23:59:47&#43;09:00"/><meta property="og:site_name" content="Gin Web Framework" />
+
+<meta itemprop="name" content="モデルへのバインディングとバリデーションする">
+<meta itemprop="description" content="リクエストボディをある型にバインドするには、モデルへのバインディングを利用してください。Gin は今のところ JSON, XML, YAML と標準的なフォームの値(foo=bar&amp;boo=baz)をサポートしています。
+Gin は go-playground/validator.v8 をバリデーションに使用しています。 タグの使い方のすべてのドキュメントを読むには ここ を参照してください。
+バインドしたいすべてのフィールドに対応するタグを設定する必要があることに注意してください。たとえば、JSONからバインドする場合は、json:&quot;fieldname&quot; を設定します。
+また、Gin は2種類のバインドのためのメソッドを用意しています。 - 種類 - Must bind - メソッド - Bind, BindJSON, BindXML, BindQuery, BindYAML - 挙動 - これらのメソッドは、内部では MustBindWith メソッドを使っています。もしバインド時にエラーがあった場合、ユーザーからのリクエストは c.AbortWithError(400, err).SetType(ErrorTypeBind) で中止されます。この処理は、ステータスコード 400 を設定し、Content-Type ヘッダーに text/plain; charset=utf-8 をセットします。もしこのあとにステータスコードを設定しようとした場合、[GIN-debug] [WARNING] Headers were already written. Wanted to override status code 400 with 422 という注意メッセージが表示されるので注意してください。もしこの挙動をよりコントロールする必要がある場合、ShouldBind という同様のメソッドを利用することを検討してください。 - 種類 - Should bind - メソッド - ShouldBind, ShouldBindJSON, ShouldBindXML, ShouldBindQuery, ShouldBindYAML - 挙動 - これらのメソッドは、内部では ShouldBindWith メソッドを使っています。もしバインド時にエラーがあった場合、エラーが返ってくるので、開発者の責任で、適切にエラーやリクエストをハンドリングします。">
+
+
+<meta itemprop="dateModified" content="2019-03-04T23:59:47&#43;09:00" />
+<meta itemprop="wordCount" content="368">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="モデルへのバインディングとバリデーションする"/>
+<meta name="twitter:description" content="リクエストボディをある型にバインドするには、モデルへのバインディングを利用してください。Gin は今のところ JSON, XML, YAML と標準的なフォームの値(foo=bar&amp;boo=baz)をサポートしています。
+Gin は go-playground/validator.v8 をバリデーションに使用しています。 タグの使い方のすべてのドキュメントを読むには ここ を参照してください。
+バインドしたいすべてのフィールドに対応するタグを設定する必要があることに注意してください。たとえば、JSONからバインドする場合は、json:&quot;fieldname&quot; を設定します。
+また、Gin は2種類のバインドのためのメソッドを用意しています。 - 種類 - Must bind - メソッド - Bind, BindJSON, BindXML, BindQuery, BindYAML - 挙動 - これらのメソッドは、内部では MustBindWith メソッドを使っています。もしバインド時にエラーがあった場合、ユーザーからのリクエストは c.AbortWithError(400, err).SetType(ErrorTypeBind) で中止されます。この処理は、ステータスコード 400 を設定し、Content-Type ヘッダーに text/plain; charset=utf-8 をセットします。もしこのあとにステータスコードを設定しようとした場合、[GIN-debug] [WARNING] Headers were already written. Wanted to override status code 400 with 422 という注意メッセージが表示されるので注意してください。もしこの挙動をよりコントロールする必要がある場合、ShouldBind という同様のメソッドを利用することを検討してください。 - 種類 - Should bind - メソッド - ShouldBind, ShouldBindJSON, ShouldBindXML, ShouldBindQuery, ShouldBindYAML - 挙動 - これらのメソッドは、内部では ShouldBindWith メソッドを使っています。もしバインド時にエラーがあった場合、エラーが返ってくるので、開発者の責任で、適切にエラーやリクエストをハンドリングします。"/>
+
+
+
+
+
+<link rel="preload" href="/scss/main.min.397589ac262831fa6dd4eb5f7daea1140a381d982abddabfeefab2fbf5645fe0.css" as="style">
+<link href="/scss/main.min.397589ac262831fa6dd4eb5f7daea1140a381d982abddabfeefab2fbf5645fe0.css" rel="stylesheet" integrity="">
+
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+
+    <title>モデルへのバインディングとバリデーションする | Gin Web Framework</title>
+  </head>
+  <body class="td-page">
+    <header>
+      
+<nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
+	<a class="navbar-brand" href="/ja/">
+		<span class="navbar-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240"/> </span><span class="font-weight-bold">Gin Web Framework</span>
+	</a>
+	<div class="td-navbar-nav-scroll ml-md-auto" id="main_navbar">
+		<ul class="navbar-nav mt-2 mt-lg-0">
+			
+			
+			<li class="nav-item mr-4 mb-2 mb-lg-0">
+				
+				
+				
+				
+				<a class="nav-link active" href="/ja/docs/"><span class="active">ドキュメント</span></a>
+			</li>
+			
+
+			
+			<li class="nav-item dropdown d-none d-lg-block">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					GitHub
+				</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+					<a class="dropdown-item" href="https://github.com/gin-gonic">Gin</a>
+					<a class="dropdown-item" href="https://github.com/gin-contrib">Middleware</a>
+				</div>
+			</li>
+
+			
+			<li class="nav-item dropdown d-none d-lg-block">
+				
+
+<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	日本語
+</a>
+<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+	
+	<a class="dropdown-item" href="/docs/examples/binding-and-validation/">English</a>
+	
+	<a class="dropdown-item" href="/zh-tw/docs/examples/binding-and-validation/">繁體中文</a>
+	
+	<a class="dropdown-item" href="/zh-cn/docs/examples/binding-and-validation/">简体中文</a>
+	
+</div>
+			</li>
+			
+		</ul>
+	</div>
+	<div class="navbar-nav d-none d-lg-block">
+ <input type="search" class="form-control td-search-input" placeholder="&#xf002 Search this site…" aria-label="Search this site…" autocomplete="off">
+</div>
+</nav>
+
+    </header>
+    <div class="container-fluid td-outer">
+      <div class="td-main">
+        <div class="row flex-xl-nowrap">
+          <div class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+            
+
+
+
+
+<div id="td-sidebar-menu" class="td-sidebar__inner">
+  
+  <nav class="collapse td-sidebar-nav pt-2 pl-4" id="td-section-nav">
+    
+    <div class="nav-item dropdown d-block d-lg-none">
+      
+
+<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	日本語
+</a>
+<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+	
+	<a class="dropdown-item" href="/docs/examples/binding-and-validation/">English</a>
+	
+	<a class="dropdown-item" href="/zh-tw/docs/examples/binding-and-validation/">繁體中文</a>
+	
+	<a class="dropdown-item" href="/zh-cn/docs/examples/binding-and-validation/">简体中文</a>
+	
+</div>
+    </div>
+    
+    
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/ja/docs/" class="align-left pl-0 pr-2 td-sidebar-link td-sidebar-link__section">ドキュメント</a>
+  </li>
+  <ul>
+    <li class="collapse show" id="ja-docs">
+      
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/ja/docs/introduction/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">まず始めに</a>
+  </li>
+  <ul>
+    <li class="collapse " id="ja-docs-introduction">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/ja/docs/quickstart/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">クイックスタート</a>
+  </li>
+  <ul>
+    <li class="collapse " id="ja-docs-quickstart">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/ja/docs/benchmarks/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">ベンチマーク</a>
+  </li>
+  <ul>
+    <li class="collapse " id="ja-docs-benchmarks">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/ja/docs/features/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">機能</a>
+  </li>
+  <ul>
+    <li class="collapse " id="ja-docs-features">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/ja/docs/jsoniter/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">Jsoniter</a>
+  </li>
+  <ul>
+    <li class="collapse " id="ja-docs-jsoniter">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/ja/docs/examples/" class="align-left pl-0 pr-2 active td-sidebar-link td-sidebar-link__section">APIの使い方のサンプル</a>
+  </li>
+  <ul>
+    <li class="collapse show" id="ja-docs-examples">
+      
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-ascii-json" href="/ja/docs/examples/ascii-json/">AsciiJSON</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-using-basicauth-middleware" href="/ja/docs/examples/using-basicauth-middleware/">BasicAuth ミドルウェアを使う</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-http-method" href="/ja/docs/examples/http-method/">GET,POST,PUT,PATCH,DELETE,OPTIONS メソッドを使う</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-run-multiple-service" href="/ja/docs/examples/run-multiple-service/">Gin を使って複数のサービスを稼働させる</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-html-rendering" href="/ja/docs/examples/html-rendering/">HTML をレンダリングする</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-bind-html-checkbox" href="/ja/docs/examples/bind-html-checkbox/">HTMLチェックボックスをバインドする</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-http2-server-push" href="/ja/docs/examples/http2-server-push/">HTTP/2 サーバープッシュ</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-jsonp" href="/ja/docs/examples/jsonp/">JSONP をレンダリングする</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-support-lets-encrypt" href="/ja/docs/examples/support-lets-encrypt/">Let&#39;s Encrypt のサポート</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-multipart-urlencoded-binding" href="/ja/docs/examples/multipart-urlencoded-binding/">Multipart/Urlencoded されたデータをバインドする</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-multipart-urlencoded-form" href="/ja/docs/examples/multipart-urlencoded-form/">Multipart/Urlencoded フォーム</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-pure-json" href="/ja/docs/examples/pure-json/">PureJSON</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-secure-json" href="/ja/docs/examples/secure-json/">SecureJSON</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-bind-uri" href="/ja/docs/examples/bind-uri/">URLをバインドする</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-rendering" href="/ja/docs/examples/rendering/">XML, JSON, YAML, ProtoBuf をレンダリングする</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-bind-body-into-dirrerent-structs" href="/ja/docs/examples/bind-body-into-dirrerent-structs/">body を異なる構造体にバインドするには</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-cookie" href="/ja/docs/examples/cookie/">cookieの設定と取得</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-graceful-restart-or-stop" href="/ja/docs/examples/graceful-restart-or-stop/">graceful restart と stop</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-serving-data-from-reader" href="/ja/docs/examples/serving-data-from-reader/">io.Reader からのデータを返す</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-custom-http-config" href="/ja/docs/examples/custom-http-config/">カスタム HTTP 設定</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-custom-validators" href="/ja/docs/examples/custom-validators/">カスタムバリデーション</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-custom-middleware" href="/ja/docs/examples/custom-middleware/">カスタムミドルウェア</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-bind-query-or-post" href="/ja/docs/examples/bind-query-or-post/">クエリ文字列あるいはポストされたデータをバインドする</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-only-bind-query-string" href="/ja/docs/examples/only-bind-query-string/">クエリ文字列のみバインドする</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-querystring-param" href="/ja/docs/examples/querystring-param/">クエリ文字列のパラメータ</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-map-as-querystring-or-postform" href="/ja/docs/examples/map-as-querystring-or-postform/">クエリ文字列やフォーム投稿によるパラメータをマッピングする</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-bind-single-binary-with-template" href="/ja/docs/examples/bind-single-binary-with-template/">テンプレートを含めた1つのバイナリをビルドする</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-without-middleware" href="/ja/docs/examples/without-middleware/">デフォルトで設定されるミドルウェアがない空の Gin を作成する</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-param-in-path" href="/ja/docs/examples/param-in-path/">パスに含まれるパラメータ</a>
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/ja/docs/examples/upload-file/" class="align-left pl-0 pr-2 td-sidebar-link td-sidebar-link__section">ファイルアップロード</a>
+  </li>
+  <ul>
+    <li class="collapse show" id="ja-docs-examples-upload-file">
+      
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-upload-file-single-file" href="/ja/docs/examples/upload-file/single-file/">単一のファイル</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-upload-file-multiple-file" href="/ja/docs/examples/upload-file/multiple-file/">複数のファイル</a>
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-bind-form-data-request-with-custom-struct" href="/ja/docs/examples/bind-form-data-request-with-custom-struct/">フォーム投稿されたリクエストを構造体にバインドする</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-query-and-post-form" href="/ja/docs/examples/query-and-post-form/">フォーム投稿によるクエリ文字列</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-using-middleware" href="/ja/docs/examples/using-middleware/">ミドルウェアを利用する</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-goroutines-inside-a-middleware" href="/ja/docs/examples/goroutines-inside-a-middleware/">ミドルウェア内の Goroutine</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page  active" id="m-ja-docs-examples-binding-and-validation" href="/ja/docs/examples/binding-and-validation/">モデルへのバインディングとバリデーションする</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-redirects" href="/ja/docs/examples/redirects/">リダイレクト</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-grouping-routes" href="/ja/docs/examples/grouping-routes/">ルーティングをグループ化する</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-define-format-for-the-log-of-routes" href="/ja/docs/examples/define-format-for-the-log-of-routes/">ルーティングログのフォーマットを定義する</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-write-log" href="/ja/docs/examples/write-log/">ログファイルへ書き込むには</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-multiple-template" href="/ja/docs/examples/multiple-template/">複数のテンプレート</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-ja-docs-examples-serving-static-files" href="/ja/docs/examples/serving-static-files/">静的ファイルを返す</a>
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/ja/docs/testing/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">テスト</a>
+  </li>
+  <ul>
+    <li class="collapse " id="ja-docs-testing">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/ja/docs/users/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">Gin のユーザー</a>
+  </li>
+  <ul>
+    <li class="collapse " id="ja-docs-users">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/ja/docs/faq/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">FAQ</a>
+  </li>
+  <ul>
+    <li class="collapse " id="ja-docs-faq">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+    </li>
+  </ul>
+</ul>
+
+  </nav>
+</div>
+
+
+
+
+          </div>
+          <div class="d-none d-xl-block col-xl-2 td-toc d-print-none">
+            
+
+
+<div class="td-page-meta ml-2 pb-1 pt-2 mb-0">
+
+
+<a href="https://github.com/gin-gonic/website/edit/master/content/ja/docs/examples/binding-and-validation.md" target="_blank"><i class="fa fa-edit fa-fw"></i> Edit this page</a>
+<a href="https://github.com/gin-gonic/website/issues/new?title=%e3%83%a2%e3%83%87%e3%83%ab%e3%81%b8%e3%81%ae%e3%83%90%e3%82%a4%e3%83%b3%e3%83%87%e3%82%a3%e3%83%b3%e3%82%b0%e3%81%a8%e3%83%90%e3%83%aa%e3%83%87%e3%83%bc%e3%82%b7%e3%83%a7%e3%83%b3%e3%81%99%e3%82%8b" target="_blank"><i class="fab fa-github fa-fw"></i> Create issue</a>
+</div>
+
+
+
+
+
+
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#バリデーションをスキップする">バリデーションをスキップする</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+
+
+
+          </div>
+          <main class="col-12 col-md-9 col-xl-8 pl-md-5" role="main">
+            <nav aria-label="breadcrumb" class="d-none d-md-block d-print-none">
+	<ol class="breadcrumb spb-1">
+		
+
+
+
+
+
+
+
+
+
+
+<li class="breadcrumb-item" >
+	<a href="https://gin-gonic.com/ja/docs/">ドキュメント</a>
+</li>
+
+
+
+
+<li class="breadcrumb-item" >
+	<a href="https://gin-gonic.com/ja/docs/examples/">APIの使い方のサンプル</a>
+</li>
+
+
+
+
+<li class="breadcrumb-item active" aria-current="page">
+	<a href="https://gin-gonic.com/ja/docs/examples/binding-and-validation/">モデルへのバインディングとバリデーションする</a>
+</li>
+
+	</ol>
+</nav	>
+
+            
+<div class="td-content">
+	<h1>モデルへのバインディングとバリデーションする</h1>
+	
+	
+
+<p>リクエストボディをある型にバインドするには、モデルへのバインディングを利用してください。Gin は今のところ JSON, XML, YAML と標準的なフォームの値(foo=bar&amp;boo=baz)をサポートしています。</p>
+
+<p>Gin は <a href="https://github.com/go-playground/validator" target="_blank"><strong>go-playground/validator.v8</strong></a> をバリデーションに使用しています。 タグの使い方のすべてのドキュメントを読むには <a href="http://godoc.org/gopkg.in/go-playground/validator.v8#hdr-Baked_In_Validators_and_Tags" target="_blank">ここ</a> を参照してください。</p>
+
+<p>バインドしたいすべてのフィールドに対応するタグを設定する必要があることに注意してください。たとえば、JSONからバインドする場合は、<code>json:&quot;fieldname&quot;</code> を設定します。</p>
+
+<p>また、Gin は2種類のバインドのためのメソッドを用意しています。
+- <strong>種類</strong> - Must bind
+  - <strong>メソッド</strong> - <code>Bind</code>, <code>BindJSON</code>, <code>BindXML</code>, <code>BindQuery</code>, <code>BindYAML</code>
+  - <strong>挙動</strong> - これらのメソッドは、内部では <code>MustBindWith</code> メソッドを使っています。もしバインド時にエラーがあった場合、ユーザーからのリクエストは <code>c.AbortWithError(400, err).SetType(ErrorTypeBind)</code> で中止されます。この処理は、ステータスコード 400 を設定し、<code>Content-Type</code> ヘッダーに <code>text/plain; charset=utf-8</code> をセットします。もしこのあとにステータスコードを設定しようとした場合、<code>[GIN-debug] [WARNING] Headers were already written. Wanted to override status code 400 with 422</code> という注意メッセージが表示されるので注意してください。もしこの挙動をよりコントロールする必要がある場合、<code>ShouldBind</code> という同様のメソッドを利用することを検討してください。
+- <strong>種類</strong> - Should bind
+  - <strong>メソッド</strong> - <code>ShouldBind</code>, <code>ShouldBindJSON</code>, <code>ShouldBindXML</code>, <code>ShouldBindQuery</code>, <code>ShouldBindYAML</code>
+  - <strong>挙動</strong> - これらのメソッドは、内部では <code>ShouldBindWith</code> メソッドを使っています。もしバインド時にエラーがあった場合、エラーが返ってくるので、開発者の責任で、適切にエラーやリクエストをハンドリングします。</p>
+
+<p><code>Bind</code> メソッドを使用するとき、Gin は Content-Type ヘッダーに応じて何のバインダーでバインドするか推測しようとします。もし何のバインダーでバインドするかわかるならば、<code>MustBindWith</code> や <code>ShouldBindWith</code> が使えます。</p>
+
+<p>また、どのフィールドが必須か指定することができます。もしフィールドが、<code>binding:&quot;required&quot;</code> 指定されていて、バインディングの際に値が空であれば、エラーが返ります。</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8f5902;font-style:italic">// JSON からバインドする
+</span><span style="color:#8f5902;font-style:italic"></span><span style="color:#204a87;font-weight:bold">type</span> <span style="color:#000">Login</span> <span style="color:#204a87;font-weight:bold">struct</span> <span style="color:#000;font-weight:bold">{</span>
+	<span style="color:#000">User</span>     <span style="color:#204a87;font-weight:bold">string</span> <span style="color:#4e9a06">`form:&#34;user&#34; json:&#34;user&#34; xml:&#34;user&#34;  binding:&#34;required&#34;`</span>
+	<span style="color:#000">Password</span> <span style="color:#204a87;font-weight:bold">string</span> <span style="color:#4e9a06">`form:&#34;password&#34; json:&#34;password&#34; xml:&#34;password&#34; binding:&#34;required&#34;`</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#204a87;font-weight:bold">func</span> <span style="color:#000">main</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+	<span style="color:#000">router</span> <span style="color:#ce5c00;font-weight:bold">:=</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Default</span><span style="color:#000;font-weight:bold">()</span>
+
+	<span style="color:#8f5902;font-style:italic">// JSON でバインドする例 ({&#34;user&#34;: &#34;manu&#34;, &#34;password&#34;: &#34;123&#34;})
+</span><span style="color:#8f5902;font-style:italic"></span>	<span style="color:#000">router</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">POST</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">&#34;/loginJSON&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#204a87;font-weight:bold">func</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">c</span> <span style="color:#ce5c00;font-weight:bold">*</span><span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Context</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+		<span style="color:#204a87;font-weight:bold">var</span> <span style="color:#000">json</span> <span style="color:#000">Login</span>
+		<span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">err</span> <span style="color:#ce5c00;font-weight:bold">:=</span> <span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">ShouldBindJSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#ce5c00;font-weight:bold">&amp;</span><span style="color:#000">json</span><span style="color:#000;font-weight:bold">);</span> <span style="color:#000">err</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#204a87;font-weight:bold">nil</span> <span style="color:#000;font-weight:bold">{</span>
+			<span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">JSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">http</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">StatusBadRequest</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">H</span><span style="color:#000;font-weight:bold">{</span><span style="color:#4e9a06">&#34;error&#34;</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">err</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Error</span><span style="color:#000;font-weight:bold">()})</span>
+			<span style="color:#204a87;font-weight:bold">return</span>
+		<span style="color:#000;font-weight:bold">}</span>
+		
+		<span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">json</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">User</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#4e9a06">&#34;manu&#34;</span> <span style="color:#ce5c00;font-weight:bold">||</span> <span style="color:#000">json</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Password</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#4e9a06">&#34;123&#34;</span> <span style="color:#000;font-weight:bold">{</span>
+			<span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">JSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">http</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">StatusUnauthorized</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">H</span><span style="color:#000;font-weight:bold">{</span><span style="color:#4e9a06">&#34;status&#34;</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#4e9a06">&#34;unauthorized&#34;</span><span style="color:#000;font-weight:bold">})</span>
+			<span style="color:#204a87;font-weight:bold">return</span>
+		<span style="color:#000;font-weight:bold">}</span> 
+		
+		<span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">JSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">http</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">StatusOK</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">H</span><span style="color:#000;font-weight:bold">{</span><span style="color:#4e9a06">&#34;status&#34;</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#4e9a06">&#34;you are logged in&#34;</span><span style="color:#000;font-weight:bold">})</span>
+	<span style="color:#000;font-weight:bold">})</span>
+
+	<span style="color:#8f5902;font-style:italic">// XML でバインドする例 (
+</span><span style="color:#8f5902;font-style:italic"></span>	<span style="color:#8f5902;font-style:italic">//	&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;
+</span><span style="color:#8f5902;font-style:italic"></span>	<span style="color:#8f5902;font-style:italic">//	&lt;root&gt;
+</span><span style="color:#8f5902;font-style:italic"></span>	<span style="color:#8f5902;font-style:italic">//		&lt;user&gt;user&lt;/user&gt;
+</span><span style="color:#8f5902;font-style:italic"></span>	<span style="color:#8f5902;font-style:italic">//		&lt;password&gt;123&lt;/user&gt;
+</span><span style="color:#8f5902;font-style:italic"></span>	<span style="color:#8f5902;font-style:italic">//	&lt;/root&gt;)
+</span><span style="color:#8f5902;font-style:italic"></span>	<span style="color:#000">router</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">POST</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">&#34;/loginXML&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#204a87;font-weight:bold">func</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">c</span> <span style="color:#ce5c00;font-weight:bold">*</span><span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Context</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+		<span style="color:#204a87;font-weight:bold">var</span> <span style="color:#000">xml</span> <span style="color:#000">Login</span>
+		<span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">err</span> <span style="color:#ce5c00;font-weight:bold">:=</span> <span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">ShouldBindXML</span><span style="color:#000;font-weight:bold">(</span><span style="color:#ce5c00;font-weight:bold">&amp;</span><span style="color:#000">xml</span><span style="color:#000;font-weight:bold">);</span> <span style="color:#000">err</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#204a87;font-weight:bold">nil</span> <span style="color:#000;font-weight:bold">{</span>
+			<span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">JSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">http</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">StatusBadRequest</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">H</span><span style="color:#000;font-weight:bold">{</span><span style="color:#4e9a06">&#34;error&#34;</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">err</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Error</span><span style="color:#000;font-weight:bold">()})</span>
+			<span style="color:#204a87;font-weight:bold">return</span>
+		<span style="color:#000;font-weight:bold">}</span>
+		
+		<span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">xml</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">User</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#4e9a06">&#34;manu&#34;</span> <span style="color:#ce5c00;font-weight:bold">||</span> <span style="color:#000">xml</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Password</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#4e9a06">&#34;123&#34;</span> <span style="color:#000;font-weight:bold">{</span>
+			<span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">JSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">http</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">StatusUnauthorized</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">H</span><span style="color:#000;font-weight:bold">{</span><span style="color:#4e9a06">&#34;status&#34;</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#4e9a06">&#34;unauthorized&#34;</span><span style="color:#000;font-weight:bold">})</span>
+			<span style="color:#204a87;font-weight:bold">return</span>
+		<span style="color:#000;font-weight:bold">}</span> 
+		
+		<span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">JSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">http</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">StatusOK</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">H</span><span style="color:#000;font-weight:bold">{</span><span style="color:#4e9a06">&#34;status&#34;</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#4e9a06">&#34;you are logged in&#34;</span><span style="color:#000;font-weight:bold">})</span>
+	<span style="color:#000;font-weight:bold">})</span>
+
+	<span style="color:#8f5902;font-style:italic">// HTML Form からバインドする例 (user=manu&amp;password=123)
+</span><span style="color:#8f5902;font-style:italic"></span>	<span style="color:#000">router</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">POST</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">&#34;/loginForm&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#204a87;font-weight:bold">func</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">c</span> <span style="color:#ce5c00;font-weight:bold">*</span><span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Context</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+		<span style="color:#204a87;font-weight:bold">var</span> <span style="color:#000">form</span> <span style="color:#000">Login</span>
+		<span style="color:#8f5902;font-style:italic">// このコードは、content-type ヘッダーから類推して HTML Form でバインドする
+</span><span style="color:#8f5902;font-style:italic"></span>		<span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">err</span> <span style="color:#ce5c00;font-weight:bold">:=</span> <span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">ShouldBind</span><span style="color:#000;font-weight:bold">(</span><span style="color:#ce5c00;font-weight:bold">&amp;</span><span style="color:#000">form</span><span style="color:#000;font-weight:bold">);</span> <span style="color:#000">err</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#204a87;font-weight:bold">nil</span> <span style="color:#000;font-weight:bold">{</span>
+			<span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">JSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">http</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">StatusBadRequest</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">H</span><span style="color:#000;font-weight:bold">{</span><span style="color:#4e9a06">&#34;error&#34;</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">err</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Error</span><span style="color:#000;font-weight:bold">()})</span>
+			<span style="color:#204a87;font-weight:bold">return</span>
+		<span style="color:#000;font-weight:bold">}</span>
+		
+		<span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">form</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">User</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#4e9a06">&#34;manu&#34;</span> <span style="color:#ce5c00;font-weight:bold">||</span> <span style="color:#000">form</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Password</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#4e9a06">&#34;123&#34;</span> <span style="color:#000;font-weight:bold">{</span>
+			<span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">JSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">http</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">StatusUnauthorized</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">H</span><span style="color:#000;font-weight:bold">{</span><span style="color:#4e9a06">&#34;status&#34;</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#4e9a06">&#34;unauthorized&#34;</span><span style="color:#000;font-weight:bold">})</span>
+			<span style="color:#204a87;font-weight:bold">return</span>
+		<span style="color:#000;font-weight:bold">}</span> 
+		
+		<span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">JSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">http</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">StatusOK</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">H</span><span style="color:#000;font-weight:bold">{</span><span style="color:#4e9a06">&#34;status&#34;</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#4e9a06">&#34;you are logged in&#34;</span><span style="color:#000;font-weight:bold">})</span>
+	<span style="color:#000;font-weight:bold">})</span>
+
+	<span style="color:#8f5902;font-style:italic">// 0.0.0.0:8080 でサーバーを立てる
+</span><span style="color:#8f5902;font-style:italic"></span>	<span style="color:#000">router</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Run</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">&#34;:8080&#34;</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">}</span></code></pre></div>
+<p><strong>リクエスト例</strong></p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ curl -v -X POST <span style="color:#4e9a06">\
+</span><span style="color:#4e9a06"></span>  http://localhost:8080/loginJSON <span style="color:#4e9a06">\
+</span><span style="color:#4e9a06"></span>  -H <span style="color:#4e9a06">&#39;content-type: application/json&#39;</span> <span style="color:#4e9a06">\
+</span><span style="color:#4e9a06"></span>  -d <span style="color:#4e9a06">&#39;{ &#34;user&#34;: &#34;manu&#34; }&#39;</span>
+&gt; POST /loginJSON HTTP/1.1
+&gt; Host: localhost:8080
+&gt; User-Agent: curl/7.51.0
+&gt; Accept: */*
+&gt; content-type: application/json
+&gt; Content-Length: <span style="color:#0000cf;font-weight:bold">18</span>
+&gt;
+* upload completely sent off: <span style="color:#0000cf;font-weight:bold">18</span> out of <span style="color:#0000cf;font-weight:bold">18</span> bytes
+&lt; HTTP/1.1 <span style="color:#0000cf;font-weight:bold">400</span> Bad Request
+&lt; Content-Type: application/json<span style="color:#000;font-weight:bold">;</span> <span style="color:#000">charset</span><span style="color:#ce5c00;font-weight:bold">=</span>utf-8
+&lt; Date: Fri, <span style="color:#0000cf;font-weight:bold">04</span> Aug <span style="color:#0000cf;font-weight:bold">2017</span> <span style="color:#0000cf;font-weight:bold">03</span>:51:31 GMT
+&lt; Content-Length: <span style="color:#0000cf;font-weight:bold">100</span>
+&lt;
+<span style="color:#ce5c00;font-weight:bold">{</span><span style="color:#4e9a06">&#34;error&#34;</span>:<span style="color:#4e9a06">&#34;Key: &#39;Login.Password&#39; Error:Field validation for &#39;Password&#39; failed on the &#39;required&#39; tag&#34;</span><span style="color:#ce5c00;font-weight:bold">}</span></code></pre></div>
+<h4 id="バリデーションをスキップする">バリデーションをスキップする</h4>
+
+<p>上記の <code>curl</code> コマンドのサンプルを実行すると、エラーが返ります。これはサンプルコードで <code>binding:&quot;required&quot;</code> が <code>Password</code> フィールドに指定されているからです。<code>binding:&quot;-&quot;</code> を <code>Password</code> フィールドに指定することで、上記のサンプルを実行してもエラーは返らなくなります。</p>
+
+	
+	
+		<br />
+		<div class="page-blank">
+
+<div id="disqus_thread"></div>
+<script>
+
+
+
+
+
+(function() { 
+var d = document, s = d.createElement('script');
+s.src = 'https://' + "gin-gonic" + '.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+	
+	<div class="text-muted mt-5 pt-3 border-top">Last modified 04.03.2019: <a  href="https://github.com/gin-gonic/website/commit/2462cdd1554245125bf06ed5aad907f5b3f123d8">Update japanese docs adjusted to hugo&#39;s format (#50) (2462cdd)</a>
+</div>
+</div>
+
+
+          </main>
+        </div>
+      </div>
+      
+<footer class="bg-dark py-5 row d-print-none" style="min-height:60px;padding-top:1rem !important">
+  <div class="container-fluid mx-sm-5">
+    <div class="row">
+      <div class="col-6 col-sm-4 text-xs-center order-sm-2">
+        
+        
+        
+<ul class="list-inline mb-0">
+  
+  <li class="list-inline-item mx-2 h3" data-toggle="tooltip" data-placement="top" title="Gitter">
+    <a class="text-white" target="_blank" href="https://gitter.im/gin-gonic/gin">
+      <i class="fab fa-gitter"></i>
+    </a>
+  </li>
+  
+  <li class="list-inline-item mx-2 h3" data-toggle="tooltip" data-placement="top" title="GitHub">
+    <a class="text-white" target="_blank" href="https://github.com/gin-gonic/gin">
+      <i class="fab fa-github"></i>
+    </a>
+  </li>
+  
+</ul>
+
+        
+        
+      </div>
+      <div class="col-6 col-sm-4 text-right text-xs-center order-sm-3">
+        
+        
+        
+      </div>
+      <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
+        <small class="text-white">&copy; 2019 Gin Team All Rights Reserved</small>
+        
+	
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+
+
+
+
+
+<script src="/js/main.min.3bf219f876522fd3da95f26cf5b58461f5289b2926b46ee10e55182e557a8855.js" integrity="sha256-O/IZ&#43;HZSL9PalfJs9bWEYfUomykmtG7hDlUYLlV6iFU="></script>
+
+
+
+
+    
+<script>
+(function() { 
+var d = document, s = d.createElement('script');
+s.src = 'https://www.googletagmanager.com/gtag/js?id=' + "UA-42425385-2";
+s.setAttribute('async', '');
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', "UA-42425385-2");
+</script>
+
+
+
+
+  </body>
+</html>

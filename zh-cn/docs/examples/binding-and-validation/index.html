@@ -1,0 +1,964 @@
+<!doctype html>
+<html lang="zh-cn" class="no-js">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="generator" content="Hugo 0.55.6" />
+
+<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+
+
+
+<link rel="shortcut icon" href="/favicons/favicon.ico" >
+<link rel="apple-touch-icon" href="/favicons/apple-touch-icon-180x180.png" sizes="180x180">
+<link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicons/android-36x36.png" sizes="36x36">
+<link rel="icon" type="image/png" href="/favicons/android-48x48.png" sizes="48x48">
+<link rel="icon" type="image/png" href="/favicons/android-72x72.png" sizes="72x72">
+<link rel="icon" type="image/png" href="/favicons/android-96x196.png" sizes="96x196">
+<link rel="icon" type="image/png" href="/favicons/android-144x144.png" sizes="144x144">
+<link rel="icon" type="image/png" href="/favicons/android-192x192.png"sizes="192x192">
+
+<title>模型绑定和验证 | Gin Web Framework</title><meta property="og:title" content="模型绑定和验证" />
+<meta property="og:description" content="要将请求体绑定到结构体中，使用模型绑定。 Gin目前支持JSON、XML、YAML和标准表单值的绑定（foo=bar＆boo=baz）。
+Gin使用 go-playground/validator.v8 进行验证。 查看标签用法的全部文档.
+使用时，需要在要绑定的所有字段上，设置相应的tag。 例如，使用 JSON 绑定时，设置字段标签为 json:&quot;fieldname&quot;。
+Gin提供了两类绑定方法：
+ Type - Must bind  Methods - Bind, BindJSON, BindXML, BindQuery, BindYAML Behavior - 这些方法属于 MustBindWith 的具体调用。 如果发生绑定错误，则请求终止，并触发 c.AbortWithError(400, err).SetType(ErrorTypeBind)。响应状态码被设置为 400 并且 Content-Type 被设置为 text/plain; charset=utf-8。 如果您在此之后尝试设置响应状态码，Gin会输出日志 [GIN-debug] [WARNING] Headers were already written. Wanted to override status code 400 with 422。 如果您希望更好地控制绑定，考虑使用 ShouldBind 等效方法。  Type - Should bind  Methods - ShouldBind, ShouldBindJSON, ShouldBindXML, ShouldBindQuery, ShouldBindYAML Behavior - 这些方法属于 ShouldBindWith 的具体调用。 如果发生绑定错误，Gin 会返回错误并由开发者处理错误和请求。   使用 Bind 方法时，Gin 会尝试根据 Content-Type 推断如何绑定。 如果你明确知道要绑定什么，可以使用 MustBindWith 或 ShouldBindWith。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://gin-gonic.com/zh-cn/docs/examples/binding-and-validation/" />
+<meta property="article:modified_time" content="2019-04-06T16:10:26&#43;08:00"/><meta property="og:site_name" content="Gin Web Framework" />
+
+<meta itemprop="name" content="模型绑定和验证">
+<meta itemprop="description" content="要将请求体绑定到结构体中，使用模型绑定。 Gin目前支持JSON、XML、YAML和标准表单值的绑定（foo=bar＆boo=baz）。
+Gin使用 go-playground/validator.v8 进行验证。 查看标签用法的全部文档.
+使用时，需要在要绑定的所有字段上，设置相应的tag。 例如，使用 JSON 绑定时，设置字段标签为 json:&quot;fieldname&quot;。
+Gin提供了两类绑定方法：
+ Type - Must bind  Methods - Bind, BindJSON, BindXML, BindQuery, BindYAML Behavior - 这些方法属于 MustBindWith 的具体调用。 如果发生绑定错误，则请求终止，并触发 c.AbortWithError(400, err).SetType(ErrorTypeBind)。响应状态码被设置为 400 并且 Content-Type 被设置为 text/plain; charset=utf-8。 如果您在此之后尝试设置响应状态码，Gin会输出日志 [GIN-debug] [WARNING] Headers were already written. Wanted to override status code 400 with 422。 如果您希望更好地控制绑定，考虑使用 ShouldBind 等效方法。  Type - Should bind  Methods - ShouldBind, ShouldBindJSON, ShouldBindXML, ShouldBindQuery, ShouldBindYAML Behavior - 这些方法属于 ShouldBindWith 的具体调用。 如果发生绑定错误，Gin 会返回错误并由开发者处理错误和请求。   使用 Bind 方法时，Gin 会尝试根据 Content-Type 推断如何绑定。 如果你明确知道要绑定什么，可以使用 MustBindWith 或 ShouldBindWith。">
+
+
+<meta itemprop="dateModified" content="2019-04-06T16:10:26&#43;08:00" />
+<meta itemprop="wordCount" content="371">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="模型绑定和验证"/>
+<meta name="twitter:description" content="要将请求体绑定到结构体中，使用模型绑定。 Gin目前支持JSON、XML、YAML和标准表单值的绑定（foo=bar＆boo=baz）。
+Gin使用 go-playground/validator.v8 进行验证。 查看标签用法的全部文档.
+使用时，需要在要绑定的所有字段上，设置相应的tag。 例如，使用 JSON 绑定时，设置字段标签为 json:&quot;fieldname&quot;。
+Gin提供了两类绑定方法：
+ Type - Must bind  Methods - Bind, BindJSON, BindXML, BindQuery, BindYAML Behavior - 这些方法属于 MustBindWith 的具体调用。 如果发生绑定错误，则请求终止，并触发 c.AbortWithError(400, err).SetType(ErrorTypeBind)。响应状态码被设置为 400 并且 Content-Type 被设置为 text/plain; charset=utf-8。 如果您在此之后尝试设置响应状态码，Gin会输出日志 [GIN-debug] [WARNING] Headers were already written. Wanted to override status code 400 with 422。 如果您希望更好地控制绑定，考虑使用 ShouldBind 等效方法。  Type - Should bind  Methods - ShouldBind, ShouldBindJSON, ShouldBindXML, ShouldBindQuery, ShouldBindYAML Behavior - 这些方法属于 ShouldBindWith 的具体调用。 如果发生绑定错误，Gin 会返回错误并由开发者处理错误和请求。   使用 Bind 方法时，Gin 会尝试根据 Content-Type 推断如何绑定。 如果你明确知道要绑定什么，可以使用 MustBindWith 或 ShouldBindWith。"/>
+
+
+
+
+
+<link rel="preload" href="/scss/main.min.397589ac262831fa6dd4eb5f7daea1140a381d982abddabfeefab2fbf5645fe0.css" as="style">
+<link href="/scss/main.min.397589ac262831fa6dd4eb5f7daea1140a381d982abddabfeefab2fbf5645fe0.css" rel="stylesheet" integrity="">
+
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+
+    <title>模型绑定和验证 | Gin Web Framework</title>
+  </head>
+  <body class="td-page">
+    <header>
+      
+<nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
+	<a class="navbar-brand" href="/zh-cn/">
+		<span class="navbar-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240"/> </span><span class="font-weight-bold">Gin Web Framework</span>
+	</a>
+	<div class="td-navbar-nav-scroll ml-md-auto" id="main_navbar">
+		<ul class="navbar-nav mt-2 mt-lg-0">
+			
+			
+			<li class="nav-item mr-4 mb-2 mb-lg-0">
+				
+				
+				
+				
+				<a class="nav-link active" href="/zh-cn/docs/"><span class="active">文档</span></a>
+			</li>
+			
+
+			
+			<li class="nav-item dropdown d-none d-lg-block">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					GitHub
+				</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+					<a class="dropdown-item" href="https://github.com/gin-gonic">Gin</a>
+					<a class="dropdown-item" href="https://github.com/gin-contrib">Middleware</a>
+				</div>
+			</li>
+
+			
+			<li class="nav-item dropdown d-none d-lg-block">
+				
+
+<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	简体中文
+</a>
+<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+	
+	<a class="dropdown-item" href="/docs/examples/binding-and-validation/">English</a>
+	
+	<a class="dropdown-item" href="/zh-tw/docs/examples/binding-and-validation/">繁體中文</a>
+	
+	<a class="dropdown-item" href="/ja/docs/examples/binding-and-validation/">日本語</a>
+	
+</div>
+			</li>
+			
+		</ul>
+	</div>
+	<div class="navbar-nav d-none d-lg-block">
+ <input type="search" class="form-control td-search-input" placeholder="&#xf002 Search this site…" aria-label="Search this site…" autocomplete="off">
+</div>
+</nav>
+
+    </header>
+    <div class="container-fluid td-outer">
+      <div class="td-main">
+        <div class="row flex-xl-nowrap">
+          <div class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+            
+
+
+
+
+<div id="td-sidebar-menu" class="td-sidebar__inner">
+  
+  <nav class="collapse td-sidebar-nav pt-2 pl-4" id="td-section-nav">
+    
+    <div class="nav-item dropdown d-block d-lg-none">
+      
+
+<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	简体中文
+</a>
+<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+	
+	<a class="dropdown-item" href="/docs/examples/binding-and-validation/">English</a>
+	
+	<a class="dropdown-item" href="/zh-tw/docs/examples/binding-and-validation/">繁體中文</a>
+	
+	<a class="dropdown-item" href="/ja/docs/examples/binding-and-validation/">日本語</a>
+	
+</div>
+    </div>
+    
+    
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/" class="align-left pl-0 pr-2 td-sidebar-link td-sidebar-link__section">文档</a>
+  </li>
+  <ul>
+    <li class="collapse show" id="zh-cn-docs">
+      
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/introduction/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">介绍</a>
+  </li>
+  <ul>
+    <li class="collapse " id="zh-cn-docs-introduction">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/quickstart/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">快速入门</a>
+  </li>
+  <ul>
+    <li class="collapse " id="zh-cn-docs-quickstart">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/benchmarks/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">基准测试</a>
+  </li>
+  <ul>
+    <li class="collapse " id="zh-cn-docs-benchmarks">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/features/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">特性</a>
+  </li>
+  <ul>
+    <li class="collapse " id="zh-cn-docs-features">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/jsoniter/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">Jsoniter</a>
+  </li>
+  <ul>
+    <li class="collapse " id="zh-cn-docs-jsoniter">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/examples/" class="align-left pl-0 pr-2 active td-sidebar-link td-sidebar-link__section">示例</a>
+  </li>
+  <ul>
+    <li class="collapse show" id="zh-cn-docs-examples">
+      
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-ascii-json" href="/zh-cn/docs/examples/ascii-json/">AsciiJSON</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-html-rendering" href="/zh-cn/docs/examples/html-rendering/">HTML 渲染</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-http2-server-push" href="/zh-cn/docs/examples/http2-server-push/">HTTP2 server 推送</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-jsonp" href="/zh-cn/docs/examples/jsonp/">JSONP</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-multipart-urlencoded-binding" href="/zh-cn/docs/examples/multipart-urlencoded-binding/">Multipart/Urlencoded 绑定</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-multipart-urlencoded-form" href="/zh-cn/docs/examples/multipart-urlencoded-form/">Multipart/Urlencoded 表单</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-pure-json" href="/zh-cn/docs/examples/pure-json/">PureJSON</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-query-and-post-form" href="/zh-cn/docs/examples/query-and-post-form/">Query 和 post form</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-secure-json" href="/zh-cn/docs/examples/secure-json/">SecureJSON</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-rendering" href="/zh-cn/docs/examples/rendering/">XML/JSON/YAML/ProtoBuf 渲染</a>
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/examples/upload-file/" class="align-left pl-0 pr-2 td-sidebar-link td-sidebar-link__section">上传文件</a>
+  </li>
+  <ul>
+    <li class="collapse show" id="zh-cn-docs-examples-upload-file">
+      
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-upload-file-single-file" href="/zh-cn/docs/examples/upload-file/single-file/">单文件</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-upload-file-multiple-file" href="/zh-cn/docs/examples/upload-file/multiple-file/">多文件</a>
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-without-middleware" href="/zh-cn/docs/examples/without-middleware/">不使用默认的中间件</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-serving-data-from-reader" href="/zh-cn/docs/examples/serving-data-from-reader/">从 reader 读取数据</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-graceful-restart-or-stop" href="/zh-cn/docs/examples/graceful-restart-or-stop/">优雅地重启或停止</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-using-basicauth-middleware" href="/zh-cn/docs/examples/using-basicauth-middleware/">使用 BasicAuth 中间件</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-http-method" href="/zh-cn/docs/examples/http-method/">使用 HTTP 方法</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-using-middleware" href="/zh-cn/docs/examples/using-middleware/">使用中间件</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-only-bind-query-string" href="/zh-cn/docs/examples/only-bind-query-string/">只绑定 url 查询字符串</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-goroutines-inside-a-middleware" href="/zh-cn/docs/examples/goroutines-inside-a-middleware/">在中间件中使用 Goroutine</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-multiple-template" href="/zh-cn/docs/examples/multiple-template/">多模板</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-write-log" href="/zh-cn/docs/examples/write-log/">如何记录日志</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-define-format-for-the-log-of-routes" href="/zh-cn/docs/examples/define-format-for-the-log-of-routes/">定义路由日志的格式</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-bind-body-into-dirrerent-structs" href="/zh-cn/docs/examples/bind-body-into-dirrerent-structs/">将 request body 绑定到不同的结构体中</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-support-lets-encrypt" href="/zh-cn/docs/examples/support-lets-encrypt/">支持 Let&#39;s Encrypt</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-map-as-querystring-or-postform" href="/zh-cn/docs/examples/map-as-querystring-or-postform/">映射查询字符串或表单参数</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-querystring-param" href="/zh-cn/docs/examples/querystring-param/">查询字符串参数</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page  active" id="m-zh-cn-docs-examples-binding-and-validation" href="/zh-cn/docs/examples/binding-and-validation/">模型绑定和验证</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-bind-html-checkbox" href="/zh-cn/docs/examples/bind-html-checkbox/">绑定 HTML 复选框</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-bind-uri" href="/zh-cn/docs/examples/bind-uri/">绑定 Uri</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-bind-query-or-post" href="/zh-cn/docs/examples/bind-query-or-post/">绑定查询字符串或表单数据</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-bind-form-data-request-with-custom-struct" href="/zh-cn/docs/examples/bind-form-data-request-with-custom-struct/">绑定表单数据至自定义结构体</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-custom-http-config" href="/zh-cn/docs/examples/custom-http-config/">自定义 HTTP 配置</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-custom-middleware" href="/zh-cn/docs/examples/custom-middleware/">自定义中间件</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-custom-validators" href="/zh-cn/docs/examples/custom-validators/">自定义验证器</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-cookie" href="/zh-cn/docs/examples/cookie/">设置和获取 Cookie</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-param-in-path" href="/zh-cn/docs/examples/param-in-path/">路由参数</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-grouping-routes" href="/zh-cn/docs/examples/grouping-routes/">路由组</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-run-multiple-service" href="/zh-cn/docs/examples/run-multiple-service/">运行多个服务</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-redirects" href="/zh-cn/docs/examples/redirects/">重定向</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-serving-static-files" href="/zh-cn/docs/examples/serving-static-files/">静态文件服务</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-bind-single-binary-with-template" href="/zh-cn/docs/examples/bind-single-binary-with-template/">静态资源嵌入</a>
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/testing/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">测试</a>
+  </li>
+  <ul>
+    <li class="collapse " id="zh-cn-docs-testing">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/users/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">用户</a>
+  </li>
+  <ul>
+    <li class="collapse " id="zh-cn-docs-users">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/faq/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">FAQ</a>
+  </li>
+  <ul>
+    <li class="collapse " id="zh-cn-docs-faq">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+    </li>
+  </ul>
+</ul>
+
+  </nav>
+</div>
+
+
+
+
+          </div>
+          <div class="d-none d-xl-block col-xl-2 td-toc d-print-none">
+            
+
+
+<div class="td-page-meta ml-2 pb-1 pt-2 mb-0">
+
+
+<a href="https://github.com/gin-gonic/website/edit/master/content/zh-cn/docs/examples/binding-and-validation.md" target="_blank"><i class="fa fa-edit fa-fw"></i> Edit this page</a>
+<a href="https://github.com/gin-gonic/website/issues/new?title=%e6%a8%a1%e5%9e%8b%e7%bb%91%e5%ae%9a%e5%92%8c%e9%aa%8c%e8%af%81" target="_blank"><i class="fab fa-github fa-fw"></i> Create issue</a>
+</div>
+
+
+
+
+
+
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#示例请求">示例请求</a></li>
+<li><a href="#忽略验证">忽略验证</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+
+
+
+          </div>
+          <main class="col-12 col-md-9 col-xl-8 pl-md-5" role="main">
+            <nav aria-label="breadcrumb" class="d-none d-md-block d-print-none">
+	<ol class="breadcrumb spb-1">
+		
+
+
+
+
+
+
+
+
+
+
+<li class="breadcrumb-item" >
+	<a href="https://gin-gonic.com/zh-cn/docs/">文档</a>
+</li>
+
+
+
+
+<li class="breadcrumb-item" >
+	<a href="https://gin-gonic.com/zh-cn/docs/examples/">示例</a>
+</li>
+
+
+
+
+<li class="breadcrumb-item active" aria-current="page">
+	<a href="https://gin-gonic.com/zh-cn/docs/examples/binding-and-validation/">模型绑定和验证</a>
+</li>
+
+	</ol>
+</nav	>
+
+            
+<div class="td-content">
+	<h1>模型绑定和验证</h1>
+	
+	
+
+<p>要将请求体绑定到结构体中，使用模型绑定。 Gin目前支持JSON、XML、YAML和标准表单值的绑定（foo=bar＆boo=baz）。</p>
+
+<p>Gin使用 <a href="https://github.com/go-playground/validator" target="_blank"><strong>go-playground/validator.v8</strong></a> 进行验证。 查看标签用法的全部<a href="http://godoc.org/gopkg.in/go-playground/validator.v8#hdr-Baked_In_Validators_and_Tags" target="_blank">文档</a>.</p>
+
+<p>使用时，需要在要绑定的所有字段上，设置相应的tag。 例如，使用 JSON 绑定时，设置字段标签为 <code>json:&quot;fieldname&quot;</code>。</p>
+
+<p>Gin提供了两类绑定方法：</p>
+
+<ul>
+<li><strong>Type</strong> - Must bind
+
+<ul>
+<li><strong>Methods</strong> - <code>Bind</code>, <code>BindJSON</code>, <code>BindXML</code>, <code>BindQuery</code>, <code>BindYAML</code></li>
+<li><strong>Behavior</strong> - 这些方法属于 <code>MustBindWith</code> 的具体调用。 如果发生绑定错误，则请求终止，并触发 <code>c.AbortWithError(400, err).SetType(ErrorTypeBind)</code>。响应状态码被设置为 400 并且 <code>Content-Type</code> 被设置为 <code>text/plain; charset=utf-8</code>。 如果您在此之后尝试设置响应状态码，Gin会输出日志 <code>[GIN-debug] [WARNING] Headers were already written. Wanted to override status code 400 with 422</code>。 如果您希望更好地控制绑定，考虑使用 <code>ShouldBind</code> 等效方法。</li>
+</ul></li>
+<li><strong>Type</strong> - Should bind
+
+<ul>
+<li><strong>Methods</strong> - <code>ShouldBind</code>, <code>ShouldBindJSON</code>, <code>ShouldBindXML</code>, <code>ShouldBindQuery</code>, <code>ShouldBindYAML</code></li>
+<li><strong>Behavior</strong> - 这些方法属于 <code>ShouldBindWith</code> 的具体调用。 如果发生绑定错误，Gin 会返回错误并由开发者处理错误和请求。</li>
+</ul></li>
+</ul>
+
+<p>使用 Bind 方法时，Gin 会尝试根据 Content-Type 推断如何绑定。 如果你明确知道要绑定什么，可以使用 <code>MustBindWith</code> 或 <code>ShouldBindWith</code>。</p>
+
+<p>你也可以指定必须绑定的字段。 如果一个字段的 tag 加上了 <code>binding:&quot;required&quot;</code>，但绑定时是空值, Gin 会报错。</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8f5902;font-style:italic">// 绑定 JSON
+</span><span style="color:#8f5902;font-style:italic"></span><span style="color:#204a87;font-weight:bold">type</span> <span style="color:#000">Login</span> <span style="color:#204a87;font-weight:bold">struct</span> <span style="color:#000;font-weight:bold">{</span>
+	<span style="color:#000">User</span>     <span style="color:#204a87;font-weight:bold">string</span> <span style="color:#4e9a06">`form:&#34;user&#34; json:&#34;user&#34; xml:&#34;user&#34;  binding:&#34;required&#34;`</span>
+	<span style="color:#000">Password</span> <span style="color:#204a87;font-weight:bold">string</span> <span style="color:#4e9a06">`form:&#34;password&#34; json:&#34;password&#34; xml:&#34;password&#34; binding:&#34;required&#34;`</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#204a87;font-weight:bold">func</span> <span style="color:#000">main</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+	<span style="color:#000">router</span> <span style="color:#ce5c00;font-weight:bold">:=</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Default</span><span style="color:#000;font-weight:bold">()</span>
+
+	<span style="color:#8f5902;font-style:italic">// 绑定 JSON ({&#34;user&#34;: &#34;manu&#34;, &#34;password&#34;: &#34;123&#34;})
+</span><span style="color:#8f5902;font-style:italic"></span>	<span style="color:#000">router</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">POST</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">&#34;/loginJSON&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#204a87;font-weight:bold">func</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">c</span> <span style="color:#ce5c00;font-weight:bold">*</span><span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Context</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+		<span style="color:#204a87;font-weight:bold">var</span> <span style="color:#000">json</span> <span style="color:#000">Login</span>
+		<span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">err</span> <span style="color:#ce5c00;font-weight:bold">:=</span> <span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">ShouldBindJSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#ce5c00;font-weight:bold">&amp;</span><span style="color:#000">json</span><span style="color:#000;font-weight:bold">);</span> <span style="color:#000">err</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#204a87;font-weight:bold">nil</span> <span style="color:#000;font-weight:bold">{</span>
+			<span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">JSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">http</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">StatusBadRequest</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">H</span><span style="color:#000;font-weight:bold">{</span><span style="color:#4e9a06">&#34;error&#34;</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">err</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Error</span><span style="color:#000;font-weight:bold">()})</span>
+			<span style="color:#204a87;font-weight:bold">return</span>
+		<span style="color:#000;font-weight:bold">}</span>
+		
+		<span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">json</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">User</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#4e9a06">&#34;manu&#34;</span> <span style="color:#ce5c00;font-weight:bold">||</span> <span style="color:#000">json</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Password</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#4e9a06">&#34;123&#34;</span> <span style="color:#000;font-weight:bold">{</span>
+			<span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">JSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">http</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">StatusUnauthorized</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">H</span><span style="color:#000;font-weight:bold">{</span><span style="color:#4e9a06">&#34;status&#34;</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#4e9a06">&#34;unauthorized&#34;</span><span style="color:#000;font-weight:bold">})</span>
+			<span style="color:#204a87;font-weight:bold">return</span>
+		<span style="color:#000;font-weight:bold">}</span> 
+		
+		<span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">JSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">http</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">StatusOK</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">H</span><span style="color:#000;font-weight:bold">{</span><span style="color:#4e9a06">&#34;status&#34;</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#4e9a06">&#34;you are logged in&#34;</span><span style="color:#000;font-weight:bold">})</span>
+	<span style="color:#000;font-weight:bold">})</span>
+
+	<span style="color:#8f5902;font-style:italic">// 绑定 XML (
+</span><span style="color:#8f5902;font-style:italic"></span>	<span style="color:#8f5902;font-style:italic">//	&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;
+</span><span style="color:#8f5902;font-style:italic"></span>	<span style="color:#8f5902;font-style:italic">//	&lt;root&gt;
+</span><span style="color:#8f5902;font-style:italic"></span>	<span style="color:#8f5902;font-style:italic">//		&lt;user&gt;user&lt;/user&gt;
+</span><span style="color:#8f5902;font-style:italic"></span>	<span style="color:#8f5902;font-style:italic">//		&lt;password&gt;123&lt;/user&gt;
+</span><span style="color:#8f5902;font-style:italic"></span>	<span style="color:#8f5902;font-style:italic">//	&lt;/root&gt;)
+</span><span style="color:#8f5902;font-style:italic"></span>	<span style="color:#000">router</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">POST</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">&#34;/loginXML&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#204a87;font-weight:bold">func</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">c</span> <span style="color:#ce5c00;font-weight:bold">*</span><span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Context</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+		<span style="color:#204a87;font-weight:bold">var</span> <span style="color:#000">xml</span> <span style="color:#000">Login</span>
+		<span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">err</span> <span style="color:#ce5c00;font-weight:bold">:=</span> <span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">ShouldBindXML</span><span style="color:#000;font-weight:bold">(</span><span style="color:#ce5c00;font-weight:bold">&amp;</span><span style="color:#000">xml</span><span style="color:#000;font-weight:bold">);</span> <span style="color:#000">err</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#204a87;font-weight:bold">nil</span> <span style="color:#000;font-weight:bold">{</span>
+			<span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">JSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">http</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">StatusBadRequest</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">H</span><span style="color:#000;font-weight:bold">{</span><span style="color:#4e9a06">&#34;error&#34;</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">err</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Error</span><span style="color:#000;font-weight:bold">()})</span>
+			<span style="color:#204a87;font-weight:bold">return</span>
+		<span style="color:#000;font-weight:bold">}</span>
+		
+		<span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">xml</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">User</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#4e9a06">&#34;manu&#34;</span> <span style="color:#ce5c00;font-weight:bold">||</span> <span style="color:#000">xml</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Password</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#4e9a06">&#34;123&#34;</span> <span style="color:#000;font-weight:bold">{</span>
+			<span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">JSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">http</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">StatusUnauthorized</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">H</span><span style="color:#000;font-weight:bold">{</span><span style="color:#4e9a06">&#34;status&#34;</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#4e9a06">&#34;unauthorized&#34;</span><span style="color:#000;font-weight:bold">})</span>
+			<span style="color:#204a87;font-weight:bold">return</span>
+		<span style="color:#000;font-weight:bold">}</span> 
+		
+		<span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">JSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">http</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">StatusOK</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">H</span><span style="color:#000;font-weight:bold">{</span><span style="color:#4e9a06">&#34;status&#34;</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#4e9a06">&#34;you are logged in&#34;</span><span style="color:#000;font-weight:bold">})</span>
+	<span style="color:#000;font-weight:bold">})</span>
+
+	<span style="color:#8f5902;font-style:italic">// 绑定 HTML 表单 (user=manu&amp;password=123)
+</span><span style="color:#8f5902;font-style:italic"></span>	<span style="color:#000">router</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">POST</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">&#34;/loginForm&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#204a87;font-weight:bold">func</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">c</span> <span style="color:#ce5c00;font-weight:bold">*</span><span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Context</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+		<span style="color:#204a87;font-weight:bold">var</span> <span style="color:#000">form</span> <span style="color:#000">Login</span>
+		<span style="color:#8f5902;font-style:italic">// 根据 Content-Type Header 推断使用哪个绑定器。
+</span><span style="color:#8f5902;font-style:italic"></span>		<span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">err</span> <span style="color:#ce5c00;font-weight:bold">:=</span> <span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">ShouldBind</span><span style="color:#000;font-weight:bold">(</span><span style="color:#ce5c00;font-weight:bold">&amp;</span><span style="color:#000">form</span><span style="color:#000;font-weight:bold">);</span> <span style="color:#000">err</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#204a87;font-weight:bold">nil</span> <span style="color:#000;font-weight:bold">{</span>
+			<span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">JSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">http</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">StatusBadRequest</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">H</span><span style="color:#000;font-weight:bold">{</span><span style="color:#4e9a06">&#34;error&#34;</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#000">err</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Error</span><span style="color:#000;font-weight:bold">()})</span>
+			<span style="color:#204a87;font-weight:bold">return</span>
+		<span style="color:#000;font-weight:bold">}</span>
+		
+		<span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">form</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">User</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#4e9a06">&#34;manu&#34;</span> <span style="color:#ce5c00;font-weight:bold">||</span> <span style="color:#000">form</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Password</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#4e9a06">&#34;123&#34;</span> <span style="color:#000;font-weight:bold">{</span>
+			<span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">JSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">http</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">StatusUnauthorized</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">H</span><span style="color:#000;font-weight:bold">{</span><span style="color:#4e9a06">&#34;status&#34;</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#4e9a06">&#34;unauthorized&#34;</span><span style="color:#000;font-weight:bold">})</span>
+			<span style="color:#204a87;font-weight:bold">return</span>
+		<span style="color:#000;font-weight:bold">}</span> 
+		
+		<span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">JSON</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">http</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">StatusOK</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">H</span><span style="color:#000;font-weight:bold">{</span><span style="color:#4e9a06">&#34;status&#34;</span><span style="color:#000;font-weight:bold">:</span> <span style="color:#4e9a06">&#34;you are logged in&#34;</span><span style="color:#000;font-weight:bold">})</span>
+	<span style="color:#000;font-weight:bold">})</span>
+
+	<span style="color:#8f5902;font-style:italic">// 监听并在 0.0.0.0:8080 上启动服务
+</span><span style="color:#8f5902;font-style:italic"></span>	<span style="color:#000">router</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Run</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">&#34;:8080&#34;</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">}</span></code></pre></div>
+<h4 id="示例请求">示例请求</h4>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ curl -v -X POST <span style="color:#4e9a06">\
+</span><span style="color:#4e9a06"></span>  http://localhost:8080/loginJSON <span style="color:#4e9a06">\
+</span><span style="color:#4e9a06"></span>  -H <span style="color:#4e9a06">&#39;content-type: application/json&#39;</span> <span style="color:#4e9a06">\
+</span><span style="color:#4e9a06"></span>  -d <span style="color:#4e9a06">&#39;{ &#34;user&#34;: &#34;manu&#34; }&#39;</span>
+&gt; POST /loginJSON HTTP/1.1
+&gt; Host: localhost:8080
+&gt; User-Agent: curl/7.51.0
+&gt; Accept: */*
+&gt; content-type: application/json
+&gt; Content-Length: <span style="color:#0000cf;font-weight:bold">18</span>
+&gt;
+* upload completely sent off: <span style="color:#0000cf;font-weight:bold">18</span> out of <span style="color:#0000cf;font-weight:bold">18</span> bytes
+&lt; HTTP/1.1 <span style="color:#0000cf;font-weight:bold">400</span> Bad Request
+&lt; Content-Type: application/json<span style="color:#000;font-weight:bold">;</span> <span style="color:#000">charset</span><span style="color:#ce5c00;font-weight:bold">=</span>utf-8
+&lt; Date: Fri, <span style="color:#0000cf;font-weight:bold">04</span> Aug <span style="color:#0000cf;font-weight:bold">2017</span> <span style="color:#0000cf;font-weight:bold">03</span>:51:31 GMT
+&lt; Content-Length: <span style="color:#0000cf;font-weight:bold">100</span>
+&lt;
+<span style="color:#ce5c00;font-weight:bold">{</span><span style="color:#4e9a06">&#34;error&#34;</span>:<span style="color:#4e9a06">&#34;Key: &#39;Login.Password&#39; Error:Field validation for &#39;Password&#39; failed on the &#39;required&#39; tag&#34;</span><span style="color:#ce5c00;font-weight:bold">}</span></code></pre></div>
+<h4 id="忽略验证">忽略验证</h4>
+
+<p>使用上述的 <code>curl</code> 命令运行上面的示例时会返回错误。 因为示例中 <code>Password</code> 使用了 <code>binding:&quot;required&quot;</code>。 如果 <code>Password</code> 使用 <code>binding:&quot;-&quot;</code>， 再次运行上面的示例就不会返回错误。</p>
+
+	
+	
+		<br />
+		<div class="page-blank">
+
+<div id="disqus_thread"></div>
+<script>
+
+
+
+
+
+(function() { 
+var d = document, s = d.createElement('script');
+s.src = 'https://' + "gin-gonic" + '.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+	
+	<div class="text-muted mt-5 pt-3 border-top">Last modified 06.04.2019: <a  href="https://github.com/gin-gonic/website/commit/ec0a6da679edde9ff2345ef8c89f74226a969484">enhancement: translation for zh-cn docs (#71) (ec0a6da)</a>
+</div>
+</div>
+
+
+          </main>
+        </div>
+      </div>
+      
+<footer class="bg-dark py-5 row d-print-none" style="min-height:60px;padding-top:1rem !important">
+  <div class="container-fluid mx-sm-5">
+    <div class="row">
+      <div class="col-6 col-sm-4 text-xs-center order-sm-2">
+        
+        
+        
+<ul class="list-inline mb-0">
+  
+  <li class="list-inline-item mx-2 h3" data-toggle="tooltip" data-placement="top" title="Gitter">
+    <a class="text-white" target="_blank" href="https://gitter.im/gin-gonic/gin">
+      <i class="fab fa-gitter"></i>
+    </a>
+  </li>
+  
+  <li class="list-inline-item mx-2 h3" data-toggle="tooltip" data-placement="top" title="GitHub">
+    <a class="text-white" target="_blank" href="https://github.com/gin-gonic/gin">
+      <i class="fab fa-github"></i>
+    </a>
+  </li>
+  
+</ul>
+
+        
+        
+      </div>
+      <div class="col-6 col-sm-4 text-right text-xs-center order-sm-3">
+        
+        
+        
+      </div>
+      <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
+        <small class="text-white">&copy; 2019 Gin Team All Rights Reserved</small>
+        
+	
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+
+
+
+
+
+<script src="/js/main.min.3bf219f876522fd3da95f26cf5b58461f5289b2926b46ee10e55182e557a8855.js" integrity="sha256-O/IZ&#43;HZSL9PalfJs9bWEYfUomykmtG7hDlUYLlV6iFU="></script>
+
+
+
+
+    
+<script>
+(function() { 
+var d = document, s = d.createElement('script');
+s.src = 'https://www.googletagmanager.com/gtag/js?id=' + "UA-42425385-2";
+s.setAttribute('async', '');
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', "UA-42425385-2");
+</script>
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="zh-tw" class="no-js">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="generator" content="Hugo 0.55.6" />
+
+<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+
+<link rel="alternate" type="application/rss&#43;xml" href="https://gin-gonic.com/zh-tw/index.xml">
+
+
+<link rel="shortcut icon" href="/favicons/favicon.ico" >
+<link rel="apple-touch-icon" href="/favicons/apple-touch-icon-180x180.png" sizes="180x180">
+<link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicons/android-36x36.png" sizes="36x36">
+<link rel="icon" type="image/png" href="/favicons/android-48x48.png" sizes="48x48">
+<link rel="icon" type="image/png" href="/favicons/android-72x72.png" sizes="72x72">
+<link rel="icon" type="image/png" href="/favicons/android-96x196.png" sizes="96x196">
+<link rel="icon" type="image/png" href="/favicons/android-144x144.png" sizes="144x144">
+<link rel="icon" type="image/png" href="/favicons/android-192x192.png"sizes="192x192">
+
+<title>Gin Web Framework</title><meta property="og:title" content="Gin Web Framework" />
+<meta property="og:description" content="Gin Web Framework" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://gin-gonic.com/zh-tw/" />
+<meta property="og:site_name" content="Gin Web Framework" />
+
+<meta itemprop="name" content="Gin Web Framework">
+<meta itemprop="description" content="Gin Web Framework">
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://gin-gonic.com/zh-tw/featured-background.jpg"/>
+<meta name="twitter:title" content="Gin Web Framework"/>
+<meta name="twitter:description" content="Gin Web Framework"/>
+
+
+
+
+
+<link rel="preload" href="/scss/main.min.397589ac262831fa6dd4eb5f7daea1140a381d982abddabfeefab2fbf5645fe0.css" as="style">
+<link href="/scss/main.min.397589ac262831fa6dd4eb5f7daea1140a381d982abddabfeefab2fbf5645fe0.css" rel="stylesheet" integrity="">
+
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+
+  </head>
+  <body class="td-home">
+    <header>
+      
+<nav class="js-navbar-scroll navbar navbar-expand navbar-dark  td-navbar-cover flex-column flex-md-row td-navbar">
+	<a class="navbar-brand" href="/zh-tw/">
+		<span class="navbar-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240"/> </span><span class="font-weight-bold">Gin Web Framework</span>
+	</a>
+	<div class="td-navbar-nav-scroll ml-md-auto" id="main_navbar">
+		<ul class="navbar-nav mt-2 mt-lg-0">
+			
+			
+			<li class="nav-item mr-4 mb-2 mb-lg-0">
+				
+				
+				
+				
+				<a class="nav-link" href="/zh-tw/docs/"><span>文件</span></a>
+			</li>
+			
+
+			
+			<li class="nav-item dropdown d-none d-lg-block">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					GitHub
+				</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+					<a class="dropdown-item" href="https://github.com/gin-gonic">Gin</a>
+					<a class="dropdown-item" href="https://github.com/gin-contrib">Middleware</a>
+				</div>
+			</li>
+
+			
+			<li class="nav-item dropdown d-none d-lg-block">
+				
+
+<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	繁體中文
+</a>
+<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+	
+	<a class="dropdown-item" href="/">English</a>
+	
+	<a class="dropdown-item" href="/ja/">日本語</a>
+	
+	<a class="dropdown-item" href="/zh-cn/">简体中文</a>
+	
+</div>
+			</li>
+			
+		</ul>
+	</div>
+	<div class="navbar-nav d-none d-lg-block">
+ <input type="search" class="form-control td-search-input" placeholder="&#xf002 Search this site…" aria-label="Search this site…" autocomplete="off">
+</div>
+</nav>
+
+    </header>
+    <div class="container-fluid td-default td-outer">
+      <main role="main" class="td-main">
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="preload" as="image" href="/zh-tw/featured-background_hud454f201d5419761586a01addb165493_107408_960x540_fill_q75_catmullrom_top.jpg" media="(max-width: 1200px)">
+<link rel="preload" as="image" href="/zh-tw/featured-background_hud454f201d5419761586a01addb165493_107408_1920x1080_fill_q75_catmullrom_top.jpg" media="(min-width: 1200px)">
+<style>
+#td-cover-block-0 {
+    background-image: url(/zh-tw/featured-background_hud454f201d5419761586a01addb165493_107408_960x540_fill_q75_catmullrom_top.jpg); 
+}
+@media only screen and (min-width: 1200px) {
+    #td-cover-block-0 {
+        background-image: url(/zh-tw/featured-background_hud454f201d5419761586a01addb165493_107408_1920x1080_fill_q75_catmullrom_top.jpg); 
+    }
+}
+</style>
+
+<section id="td-cover-block-0" class="row td-cover-block td-cover-block--height-full js-td-cover td-overlay td-overlay--dark -bg-orange">
+  <div class="container td-overlay__inner">
+    <div class="row">
+      <div class="col-12">
+        <div class="text-center">
+          <h1 class="display-1 mt-0 mt-md-5 pb-4">Gin Web Framework for Go</h1>
+          
+          <div class="pt-3 lead">
+            
+<div class="mx-auto">
+	<a class="btn btn-lg btn-primary mr-3 mb-4" href="/zh-tw/docs/">
+		深入瞭解 <i class="fas fa-arrow-alt-circle-right ml-2"></i>
+	</a>
+	<a class="btn btn-lg btn-secondary mr-3 mb-4" href="https://github.com/gin-gonic/gin/releases">
+		下載 <i class="fab fa-github ml-2 "></i>
+	</a>
+	<p class="lead mt-5">最快速、功能完整的 Go Web 框架。顯而易見。</p>
+	<div class="mx-auto mt-5">
+		
+
+
+<a class="btn btn-link text-info" href="#td-block-1"><i class="fa fa-chevron-circle-down" style="font-size: 400%"></i></a>
+
+	</div>
+</div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+<a id="td-block-1" class="td-offset-anchor"></a>
+<section class="row td-box td-box--white position-relative td-box--gradient td-box--height-auto">
+	<div class="container text-center td-arrow-down">
+		<span class="h4 mb-0">
+			
+
+**Gin 是什麼？**
+
+Gin 是一個使用 Golang 寫的 Web 框架。
+
+它提供類似 Martini 的 API，但擁有更好的效能，速度快上了 40 倍。
+
+如果你需要效能和高生產力，你將會愛上 Gin。
+
+
+		</span>
+	</div>
+</section>
+
+
+
+<a id="td-block-2" class="td-offset-anchor"></a>
+<section class="row td-box td-box--light td-box--gradient td-box--height-auto">
+	<div class="col">
+		<div class="row">
+			
+
+
+
+<div class="col-lg-4 mb-5 mb-lg-0 text-center ">
+  <div class="mb-4 h1">
+    <i class="fas fa fa-tachometer-alt"></i>
+  </div>
+  <h4 class="h3">快速</h4>
+  <p class="mb-0"><p>以 Radix tree 為基礎的路由，記憶體使用量小。
+沒有使用 reflection。可預測的 API 效能。</p>
+</p>
+  
+</div>
+
+
+
+
+<div class="col-lg-4 mb-5 mb-lg-0 text-center ">
+  <div class="mb-4 h1">
+    <i class="fas fa fa-bars"></i>
+  </div>
+  <h4 class="h3">支援 Middleware</h4>
+  <p class="mb-0"><p>傳入的請求可以由一系列的 Middleware 和最終行為來處理。例如：Logger、Authorization、GZIP，最後送訊息到資料庫。</p>
+</p>
+  
+</div>
+
+
+
+
+<div class="col-lg-4 mb-5 mb-lg-0 text-center ">
+  <div class="mb-4 h1">
+    <i class="fas fa fa-life-ring"></i>
+  </div>
+  <h4 class="h3">Crash-free</h4>
+  <p class="mb-0"><p>Gin 可以攔截發生在 HTTP 請求期間的 panic 並回復它。這樣的話，伺服器將永遠是可用狀態。舉例來說，它可以選擇回報 panic 給 Sentry。</p>
+</p>
+  
+</div>
+
+
+
+		</div>
+	</div>
+</section>
+
+
+
+<a id="td-block-3" class="td-offset-anchor"></a>
+<section class="row td-box td-box--white td-box--gradient td-box--height-auto">
+	<div class="col">
+		<div class="row">
+			
+
+
+
+<div class="col-lg-4 mb-5 mb-lg-0 text-center ">
+  <div class="mb-4 h1">
+    <i class="fas fa fa-check-circle"></i>
+  </div>
+  <h4 class="h3">JSON 驗證</h4>
+  <p class="mb-0"><p>Gin 可以剖析和驗證請求裡的 JSON，例如檢查必要值。</p>
+</p>
+  
+</div>
+
+
+
+
+<div class="col-lg-4 mb-5 mb-lg-0 text-center ">
+  <div class="mb-4 h1">
+    <i class="fas fa fa-users-cog"></i>
+  </div>
+  <h4 class="h3">路由群組</h4>
+  <p class="mb-0"><p>更好地組織你的路由。需不需要授權或不同的 API 版本。此外，這些群組可以無限制地巢狀嵌套而不會降低效能。</p>
+</p>
+  
+</div>
+
+
+
+
+<div class="col-lg-4 mb-5 mb-lg-0 text-center ">
+  <div class="mb-4 h1">
+    <i class="fas fa fa-briefcase"></i>
+  </div>
+  <h4 class="h3">錯誤管理</h4>
+  <p class="mb-0"><p>Gin 提供了一種方便的方法來收集 HTTP 請求期間發生的所有錯誤。 最後， Middleware 可以將它們寫入日誌檔案、寫入資料庫，並透過網路傳送。</p>
+</p>
+  
+</div>
+
+
+
+		</div>
+	</div>
+</section>
+
+
+
+<a id="td-block-4" class="td-offset-anchor"></a>
+<section class="row td-box td-box--info td-box--gradient td-box--height-auto">
+	<div class="col">
+		<div class="row">
+			
+
+
+
+<div class="col-lg-4 mb-5 mb-lg-0 text-center ">
+  <div class="mb-4 h1">
+    <i class="fas fa fa-images"></i>
+  </div>
+  <h4 class="h3">內建渲染</h4>
+  <p class="mb-0"><p>Gin 提供易使用的 API 來渲染 JSON、XML 和 HTML。</p>
+</p>
+  
+</div>
+
+
+
+
+<div class="col-lg-4 mb-5 mb-lg-0 text-center ">
+  <div class="mb-4 h1">
+    <i class="fas fa fa-code"></i>
+  </div>
+  <h4 class="h3">可擴展性</h4>
+  <p class="mb-0"><p>建立新的 Middleware 很簡單，直接查看範例程式碼即可。</p>
+</p>
+  
+</div>
+
+
+
+		</div>
+	</div>
+</section>
+
+
+
+      </main>
+      
+<footer class="bg-dark py-5 row d-print-none" style="min-height:60px;padding-top:1rem !important">
+  <div class="container-fluid mx-sm-5">
+    <div class="row">
+      <div class="col-6 col-sm-4 text-xs-center order-sm-2">
+        
+        
+        
+<ul class="list-inline mb-0">
+  
+  <li class="list-inline-item mx-2 h3" data-toggle="tooltip" data-placement="top" title="Gitter">
+    <a class="text-white" target="_blank" href="https://gitter.im/gin-gonic/gin">
+      <i class="fab fa-gitter"></i>
+    </a>
+  </li>
+  
+  <li class="list-inline-item mx-2 h3" data-toggle="tooltip" data-placement="top" title="GitHub">
+    <a class="text-white" target="_blank" href="https://github.com/gin-gonic/gin">
+      <i class="fab fa-github"></i>
+    </a>
+  </li>
+  
+</ul>
+
+        
+        
+      </div>
+      <div class="col-6 col-sm-4 text-right text-xs-center order-sm-3">
+        
+        
+        
+      </div>
+      <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
+        <small class="text-white">&copy; 2019 Gin Team All Rights Reserved</small>
+        
+	
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+
+
+
+
+
+<script src="/js/main.min.3bf219f876522fd3da95f26cf5b58461f5289b2926b46ee10e55182e557a8855.js" integrity="sha256-O/IZ&#43;HZSL9PalfJs9bWEYfUomykmtG7hDlUYLlV6iFU="></script>
+
+
+
+
+    
+<script>
+(function() { 
+var d = document, s = d.createElement('script');
+s.src = 'https://www.googletagmanager.com/gtag/js?id=' + "UA-42425385-2";
+s.setAttribute('async', '');
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', "UA-42425385-2");
+</script>
+
+
+
+
+  </body>
+</html>

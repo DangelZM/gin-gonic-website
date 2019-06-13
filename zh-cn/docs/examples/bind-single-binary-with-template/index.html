@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="zh-cn" class="no-js">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="generator" content="Hugo 0.55.6" />
+
+<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+
+
+
+<link rel="shortcut icon" href="/favicons/favicon.ico" >
+<link rel="apple-touch-icon" href="/favicons/apple-touch-icon-180x180.png" sizes="180x180">
+<link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicons/android-36x36.png" sizes="36x36">
+<link rel="icon" type="image/png" href="/favicons/android-48x48.png" sizes="48x48">
+<link rel="icon" type="image/png" href="/favicons/android-72x72.png" sizes="72x72">
+<link rel="icon" type="image/png" href="/favicons/android-96x196.png" sizes="96x196">
+<link rel="icon" type="image/png" href="/favicons/android-144x144.png" sizes="144x144">
+<link rel="icon" type="image/png" href="/favicons/android-192x192.png"sizes="192x192">
+
+<title>静态资源嵌入 | Gin Web Framework</title><meta property="og:title" content="静态资源嵌入" />
+<meta property="og:description" content="你可以使用 go-assets 将静态资源打包到可执行文件中。
+func main() { r := gin.New() t, err := loadTemplate() if err != nil { panic(err) } r.SetHTMLTemplate(t) r.GET(&#34;/&#34;, func(c *gin.Context) { c.HTML(http.StatusOK, &#34;/html/index.tmpl&#34;,nil) }) r.Run(&#34;:8080&#34;) } // loadTemplate 加载由 go-assets-builder 嵌入的模板 func loadTemplate() (*template.Template, error) { t := template.New(&#34;&#34;) for name, file := range Assets.Files { if file.IsDir() || !strings.HasSuffix(name, &#34;.tmpl&#34;) { continue } h, err := ioutil.ReadAll(file) if err != nil { return nil, err } t, err = t." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://gin-gonic.com/zh-cn/docs/examples/bind-single-binary-with-template/" />
+<meta property="article:modified_time" content="2019-04-06T16:10:26&#43;08:00"/><meta property="og:site_name" content="Gin Web Framework" />
+
+<meta itemprop="name" content="静态资源嵌入">
+<meta itemprop="description" content="你可以使用 go-assets 将静态资源打包到可执行文件中。
+func main() { r := gin.New() t, err := loadTemplate() if err != nil { panic(err) } r.SetHTMLTemplate(t) r.GET(&#34;/&#34;, func(c *gin.Context) { c.HTML(http.StatusOK, &#34;/html/index.tmpl&#34;,nil) }) r.Run(&#34;:8080&#34;) } // loadTemplate 加载由 go-assets-builder 嵌入的模板 func loadTemplate() (*template.Template, error) { t := template.New(&#34;&#34;) for name, file := range Assets.Files { if file.IsDir() || !strings.HasSuffix(name, &#34;.tmpl&#34;) { continue } h, err := ioutil.ReadAll(file) if err != nil { return nil, err } t, err = t.">
+
+
+<meta itemprop="dateModified" content="2019-04-06T16:10:26&#43;08:00" />
+<meta itemprop="wordCount" content="92">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="静态资源嵌入"/>
+<meta name="twitter:description" content="你可以使用 go-assets 将静态资源打包到可执行文件中。
+func main() { r := gin.New() t, err := loadTemplate() if err != nil { panic(err) } r.SetHTMLTemplate(t) r.GET(&#34;/&#34;, func(c *gin.Context) { c.HTML(http.StatusOK, &#34;/html/index.tmpl&#34;,nil) }) r.Run(&#34;:8080&#34;) } // loadTemplate 加载由 go-assets-builder 嵌入的模板 func loadTemplate() (*template.Template, error) { t := template.New(&#34;&#34;) for name, file := range Assets.Files { if file.IsDir() || !strings.HasSuffix(name, &#34;.tmpl&#34;) { continue } h, err := ioutil.ReadAll(file) if err != nil { return nil, err } t, err = t."/>
+
+
+
+
+
+<link rel="preload" href="/scss/main.min.397589ac262831fa6dd4eb5f7daea1140a381d982abddabfeefab2fbf5645fe0.css" as="style">
+<link href="/scss/main.min.397589ac262831fa6dd4eb5f7daea1140a381d982abddabfeefab2fbf5645fe0.css" rel="stylesheet" integrity="">
+
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+
+    <title>静态资源嵌入 | Gin Web Framework</title>
+  </head>
+  <body class="td-page">
+    <header>
+      
+<nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
+	<a class="navbar-brand" href="/zh-cn/">
+		<span class="navbar-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240"/> </span><span class="font-weight-bold">Gin Web Framework</span>
+	</a>
+	<div class="td-navbar-nav-scroll ml-md-auto" id="main_navbar">
+		<ul class="navbar-nav mt-2 mt-lg-0">
+			
+			
+			<li class="nav-item mr-4 mb-2 mb-lg-0">
+				
+				
+				
+				
+				<a class="nav-link active" href="/zh-cn/docs/"><span class="active">文档</span></a>
+			</li>
+			
+
+			
+			<li class="nav-item dropdown d-none d-lg-block">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					GitHub
+				</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+					<a class="dropdown-item" href="https://github.com/gin-gonic">Gin</a>
+					<a class="dropdown-item" href="https://github.com/gin-contrib">Middleware</a>
+				</div>
+			</li>
+
+			
+			<li class="nav-item dropdown d-none d-lg-block">
+				
+
+<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	简体中文
+</a>
+<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+	
+	<a class="dropdown-item" href="/docs/examples/bind-single-binary-with-template/">English</a>
+	
+	<a class="dropdown-item" href="/zh-tw/docs/examples/bind-single-binary-with-template/">繁體中文</a>
+	
+	<a class="dropdown-item" href="/ja/docs/examples/bind-single-binary-with-template/">日本語</a>
+	
+</div>
+			</li>
+			
+		</ul>
+	</div>
+	<div class="navbar-nav d-none d-lg-block">
+ <input type="search" class="form-control td-search-input" placeholder="&#xf002 Search this site…" aria-label="Search this site…" autocomplete="off">
+</div>
+</nav>
+
+    </header>
+    <div class="container-fluid td-outer">
+      <div class="td-main">
+        <div class="row flex-xl-nowrap">
+          <div class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+            
+
+
+
+
+<div id="td-sidebar-menu" class="td-sidebar__inner">
+  
+  <nav class="collapse td-sidebar-nav pt-2 pl-4" id="td-section-nav">
+    
+    <div class="nav-item dropdown d-block d-lg-none">
+      
+
+<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	简体中文
+</a>
+<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+	
+	<a class="dropdown-item" href="/docs/examples/bind-single-binary-with-template/">English</a>
+	
+	<a class="dropdown-item" href="/zh-tw/docs/examples/bind-single-binary-with-template/">繁體中文</a>
+	
+	<a class="dropdown-item" href="/ja/docs/examples/bind-single-binary-with-template/">日本語</a>
+	
+</div>
+    </div>
+    
+    
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/" class="align-left pl-0 pr-2 td-sidebar-link td-sidebar-link__section">文档</a>
+  </li>
+  <ul>
+    <li class="collapse show" id="zh-cn-docs">
+      
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/introduction/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">介绍</a>
+  </li>
+  <ul>
+    <li class="collapse " id="zh-cn-docs-introduction">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/quickstart/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">快速入门</a>
+  </li>
+  <ul>
+    <li class="collapse " id="zh-cn-docs-quickstart">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/benchmarks/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">基准测试</a>
+  </li>
+  <ul>
+    <li class="collapse " id="zh-cn-docs-benchmarks">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/features/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">特性</a>
+  </li>
+  <ul>
+    <li class="collapse " id="zh-cn-docs-features">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/jsoniter/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">Jsoniter</a>
+  </li>
+  <ul>
+    <li class="collapse " id="zh-cn-docs-jsoniter">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/examples/" class="align-left pl-0 pr-2 active td-sidebar-link td-sidebar-link__section">示例</a>
+  </li>
+  <ul>
+    <li class="collapse show" id="zh-cn-docs-examples">
+      
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-ascii-json" href="/zh-cn/docs/examples/ascii-json/">AsciiJSON</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-html-rendering" href="/zh-cn/docs/examples/html-rendering/">HTML 渲染</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-http2-server-push" href="/zh-cn/docs/examples/http2-server-push/">HTTP2 server 推送</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-jsonp" href="/zh-cn/docs/examples/jsonp/">JSONP</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-multipart-urlencoded-binding" href="/zh-cn/docs/examples/multipart-urlencoded-binding/">Multipart/Urlencoded 绑定</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-multipart-urlencoded-form" href="/zh-cn/docs/examples/multipart-urlencoded-form/">Multipart/Urlencoded 表单</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-pure-json" href="/zh-cn/docs/examples/pure-json/">PureJSON</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-query-and-post-form" href="/zh-cn/docs/examples/query-and-post-form/">Query 和 post form</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-secure-json" href="/zh-cn/docs/examples/secure-json/">SecureJSON</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-rendering" href="/zh-cn/docs/examples/rendering/">XML/JSON/YAML/ProtoBuf 渲染</a>
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/examples/upload-file/" class="align-left pl-0 pr-2 td-sidebar-link td-sidebar-link__section">上传文件</a>
+  </li>
+  <ul>
+    <li class="collapse show" id="zh-cn-docs-examples-upload-file">
+      
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-upload-file-single-file" href="/zh-cn/docs/examples/upload-file/single-file/">单文件</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-upload-file-multiple-file" href="/zh-cn/docs/examples/upload-file/multiple-file/">多文件</a>
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-without-middleware" href="/zh-cn/docs/examples/without-middleware/">不使用默认的中间件</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-serving-data-from-reader" href="/zh-cn/docs/examples/serving-data-from-reader/">从 reader 读取数据</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-graceful-restart-or-stop" href="/zh-cn/docs/examples/graceful-restart-or-stop/">优雅地重启或停止</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-using-basicauth-middleware" href="/zh-cn/docs/examples/using-basicauth-middleware/">使用 BasicAuth 中间件</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-http-method" href="/zh-cn/docs/examples/http-method/">使用 HTTP 方法</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-using-middleware" href="/zh-cn/docs/examples/using-middleware/">使用中间件</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-only-bind-query-string" href="/zh-cn/docs/examples/only-bind-query-string/">只绑定 url 查询字符串</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-goroutines-inside-a-middleware" href="/zh-cn/docs/examples/goroutines-inside-a-middleware/">在中间件中使用 Goroutine</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-multiple-template" href="/zh-cn/docs/examples/multiple-template/">多模板</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-write-log" href="/zh-cn/docs/examples/write-log/">如何记录日志</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-define-format-for-the-log-of-routes" href="/zh-cn/docs/examples/define-format-for-the-log-of-routes/">定义路由日志的格式</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-bind-body-into-dirrerent-structs" href="/zh-cn/docs/examples/bind-body-into-dirrerent-structs/">将 request body 绑定到不同的结构体中</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-support-lets-encrypt" href="/zh-cn/docs/examples/support-lets-encrypt/">支持 Let&#39;s Encrypt</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-map-as-querystring-or-postform" href="/zh-cn/docs/examples/map-as-querystring-or-postform/">映射查询字符串或表单参数</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-querystring-param" href="/zh-cn/docs/examples/querystring-param/">查询字符串参数</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-binding-and-validation" href="/zh-cn/docs/examples/binding-and-validation/">模型绑定和验证</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-bind-html-checkbox" href="/zh-cn/docs/examples/bind-html-checkbox/">绑定 HTML 复选框</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-bind-uri" href="/zh-cn/docs/examples/bind-uri/">绑定 Uri</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-bind-query-or-post" href="/zh-cn/docs/examples/bind-query-or-post/">绑定查询字符串或表单数据</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-bind-form-data-request-with-custom-struct" href="/zh-cn/docs/examples/bind-form-data-request-with-custom-struct/">绑定表单数据至自定义结构体</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-custom-http-config" href="/zh-cn/docs/examples/custom-http-config/">自定义 HTTP 配置</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-custom-middleware" href="/zh-cn/docs/examples/custom-middleware/">自定义中间件</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-custom-validators" href="/zh-cn/docs/examples/custom-validators/">自定义验证器</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-cookie" href="/zh-cn/docs/examples/cookie/">设置和获取 Cookie</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-param-in-path" href="/zh-cn/docs/examples/param-in-path/">路由参数</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-grouping-routes" href="/zh-cn/docs/examples/grouping-routes/">路由组</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-run-multiple-service" href="/zh-cn/docs/examples/run-multiple-service/">运行多个服务</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-redirects" href="/zh-cn/docs/examples/redirects/">重定向</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page " id="m-zh-cn-docs-examples-serving-static-files" href="/zh-cn/docs/examples/serving-static-files/">静态文件服务</a>
+      
+      
+      
+      
+      
+      <a class="td-sidebar-link td-sidebar-link__page  active" id="m-zh-cn-docs-examples-bind-single-binary-with-template" href="/zh-cn/docs/examples/bind-single-binary-with-template/">静态资源嵌入</a>
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/testing/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">测试</a>
+  </li>
+  <ul>
+    <li class="collapse " id="zh-cn-docs-testing">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/users/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">用户</a>
+  </li>
+  <ul>
+    <li class="collapse " id="zh-cn-docs-users">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+      
+      
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/zh-cn/docs/faq/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">FAQ</a>
+  </li>
+  <ul>
+    <li class="collapse " id="zh-cn-docs-faq">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+      
+      
+    </li>
+  </ul>
+</ul>
+
+  </nav>
+</div>
+
+
+
+
+          </div>
+          <div class="d-none d-xl-block col-xl-2 td-toc d-print-none">
+            
+
+
+<div class="td-page-meta ml-2 pb-1 pt-2 mb-0">
+
+
+<a href="https://github.com/gin-gonic/website/edit/master/content/zh-cn/docs/examples/bind-single-binary-with-template.md" target="_blank"><i class="fa fa-edit fa-fw"></i> Edit this page</a>
+<a href="https://github.com/gin-gonic/website/issues/new?title=%e9%9d%99%e6%80%81%e8%b5%84%e6%ba%90%e5%b5%8c%e5%85%a5" target="_blank"><i class="fab fa-github fa-fw"></i> Create issue</a>
+</div>
+
+
+
+
+
+
+          </div>
+          <main class="col-12 col-md-9 col-xl-8 pl-md-5" role="main">
+            <nav aria-label="breadcrumb" class="d-none d-md-block d-print-none">
+	<ol class="breadcrumb spb-1">
+		
+
+
+
+
+
+
+
+
+
+
+<li class="breadcrumb-item" >
+	<a href="https://gin-gonic.com/zh-cn/docs/">文档</a>
+</li>
+
+
+
+
+<li class="breadcrumb-item" >
+	<a href="https://gin-gonic.com/zh-cn/docs/examples/">示例</a>
+</li>
+
+
+
+
+<li class="breadcrumb-item active" aria-current="page">
+	<a href="https://gin-gonic.com/zh-cn/docs/examples/bind-single-binary-with-template/">静态资源嵌入</a>
+</li>
+
+	</ol>
+</nav	>
+
+            
+<div class="td-content">
+	<h1>静态资源嵌入</h1>
+	
+	<p>你可以使用  <a href="https://github.com/jessevdk/go-assets" target="_blank">go-assets</a> 将静态资源打包到可执行文件中。</p>
+<div class="highlight"><pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#204a87;font-weight:bold">func</span> <span style="color:#000">main</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">{</span>
+	<span style="color:#000">r</span> <span style="color:#ce5c00;font-weight:bold">:=</span> <span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">New</span><span style="color:#000;font-weight:bold">()</span>
+
+	<span style="color:#000">t</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">err</span> <span style="color:#ce5c00;font-weight:bold">:=</span> <span style="color:#000">loadTemplate</span><span style="color:#000;font-weight:bold">()</span>
+	<span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">err</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#204a87;font-weight:bold">nil</span> <span style="color:#000;font-weight:bold">{</span>
+		<span style="color:#204a87">panic</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">err</span><span style="color:#000;font-weight:bold">)</span>
+	<span style="color:#000;font-weight:bold">}</span>
+	<span style="color:#000">r</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">SetHTMLTemplate</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">t</span><span style="color:#000;font-weight:bold">)</span>
+
+	<span style="color:#000">r</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">GET</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">&#34;/&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#204a87;font-weight:bold">func</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">c</span> <span style="color:#ce5c00;font-weight:bold">*</span><span style="color:#000">gin</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Context</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+		<span style="color:#000">c</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">HTML</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">http</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">StatusOK</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#4e9a06">&#34;/html/index.tmpl&#34;</span><span style="color:#000;font-weight:bold">,</span><span style="color:#204a87;font-weight:bold">nil</span><span style="color:#000;font-weight:bold">)</span>
+	<span style="color:#000;font-weight:bold">})</span>
+	<span style="color:#000">r</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Run</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">&#34;:8080&#34;</span><span style="color:#000;font-weight:bold">)</span>
+<span style="color:#000;font-weight:bold">}</span>
+
+<span style="color:#8f5902;font-style:italic">// loadTemplate 加载由 go-assets-builder 嵌入的模板
+</span><span style="color:#8f5902;font-style:italic"></span><span style="color:#204a87;font-weight:bold">func</span> <span style="color:#000">loadTemplate</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#ce5c00;font-weight:bold">*</span><span style="color:#000">template</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Template</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#204a87;font-weight:bold">error</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+	<span style="color:#000">t</span> <span style="color:#ce5c00;font-weight:bold">:=</span> <span style="color:#000">template</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">New</span><span style="color:#000;font-weight:bold">(</span><span style="color:#4e9a06">&#34;&#34;</span><span style="color:#000;font-weight:bold">)</span>
+	<span style="color:#204a87;font-weight:bold">for</span> <span style="color:#000">name</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">file</span> <span style="color:#ce5c00;font-weight:bold">:=</span> <span style="color:#204a87;font-weight:bold">range</span> <span style="color:#000">Assets</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">Files</span> <span style="color:#000;font-weight:bold">{</span>
+		<span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">file</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">IsDir</span><span style="color:#000;font-weight:bold">()</span> <span style="color:#ce5c00;font-weight:bold">||</span> <span style="color:#000;font-weight:bold">!</span><span style="color:#000">strings</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">HasSuffix</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">name</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#4e9a06">&#34;.tmpl&#34;</span><span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+			<span style="color:#204a87;font-weight:bold">continue</span>
+		<span style="color:#000;font-weight:bold">}</span>
+		<span style="color:#000">h</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">err</span> <span style="color:#ce5c00;font-weight:bold">:=</span> <span style="color:#000">ioutil</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">ReadAll</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">file</span><span style="color:#000;font-weight:bold">)</span>
+		<span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">err</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#204a87;font-weight:bold">nil</span> <span style="color:#000;font-weight:bold">{</span>
+			<span style="color:#204a87;font-weight:bold">return</span> <span style="color:#204a87;font-weight:bold">nil</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">err</span>
+		<span style="color:#000;font-weight:bold">}</span>
+		<span style="color:#000">t</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">err</span> <span style="color:#000;font-weight:bold">=</span> <span style="color:#000">t</span><span style="color:#000;font-weight:bold">.</span><span style="color:#000">New</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">name</span><span style="color:#000;font-weight:bold">).</span><span style="color:#000">Parse</span><span style="color:#000;font-weight:bold">(</span><span style="color:#204a87">string</span><span style="color:#000;font-weight:bold">(</span><span style="color:#000">h</span><span style="color:#000;font-weight:bold">))</span>
+		<span style="color:#204a87;font-weight:bold">if</span> <span style="color:#000">err</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#204a87;font-weight:bold">nil</span> <span style="color:#000;font-weight:bold">{</span>
+			<span style="color:#204a87;font-weight:bold">return</span> <span style="color:#204a87;font-weight:bold">nil</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#000">err</span>
+		<span style="color:#000;font-weight:bold">}</span>
+	<span style="color:#000;font-weight:bold">}</span>
+	<span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">t</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#204a87;font-weight:bold">nil</span>
+<span style="color:#000;font-weight:bold">}</span></code></pre></div>
+<p>请参阅 <code>examples/assets-in-binary</code> 目录中的完整示例。</p>
+
+	
+	
+		<br />
+		<div class="page-blank">
+
+<div id="disqus_thread"></div>
+<script>
+
+
+
+
+
+(function() { 
+var d = document, s = d.createElement('script');
+s.src = 'https://' + "gin-gonic" + '.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+	
+	<div class="text-muted mt-5 pt-3 border-top">Last modified 06.04.2019: <a  href="https://github.com/gin-gonic/website/commit/ec0a6da679edde9ff2345ef8c89f74226a969484">enhancement: translation for zh-cn docs (#71) (ec0a6da)</a>
+</div>
+</div>
+
+
+          </main>
+        </div>
+      </div>
+      
+<footer class="bg-dark py-5 row d-print-none" style="min-height:60px;padding-top:1rem !important">
+  <div class="container-fluid mx-sm-5">
+    <div class="row">
+      <div class="col-6 col-sm-4 text-xs-center order-sm-2">
+        
+        
+        
+<ul class="list-inline mb-0">
+  
+  <li class="list-inline-item mx-2 h3" data-toggle="tooltip" data-placement="top" title="Gitter">
+    <a class="text-white" target="_blank" href="https://gitter.im/gin-gonic/gin">
+      <i class="fab fa-gitter"></i>
+    </a>
+  </li>
+  
+  <li class="list-inline-item mx-2 h3" data-toggle="tooltip" data-placement="top" title="GitHub">
+    <a class="text-white" target="_blank" href="https://github.com/gin-gonic/gin">
+      <i class="fab fa-github"></i>
+    </a>
+  </li>
+  
+</ul>
+
+        
+        
+      </div>
+      <div class="col-6 col-sm-4 text-right text-xs-center order-sm-3">
+        
+        
+        
+      </div>
+      <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
+        <small class="text-white">&copy; 2019 Gin Team All Rights Reserved</small>
+        
+	
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+
+
+
+
+
+<script src="/js/main.min.3bf219f876522fd3da95f26cf5b58461f5289b2926b46ee10e55182e557a8855.js" integrity="sha256-O/IZ&#43;HZSL9PalfJs9bWEYfUomykmtG7hDlUYLlV6iFU="></script>
+
+
+
+
+    
+<script>
+(function() { 
+var d = document, s = d.createElement('script');
+s.src = 'https://www.googletagmanager.com/gtag/js?id=' + "UA-42425385-2";
+s.setAttribute('async', '');
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', "UA-42425385-2");
+</script>
+
+
+
+
+  </body>
+</html>
